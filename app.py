@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd
 import os
-from datetime import date
+from datetime import date, timedelta
 import uuid
 
 st.set_page_config(page_title="Campus Event Planner", page_icon="🎓", layout="wide")
@@ -13,7 +13,7 @@ CATEGORIES = [
     "Catering",
     "Facilities & Service Requests",
     "Parking",
-    "UACE",
+    "Events Dept.",
     "Billing",
     "Outdoor",
 ]
@@ -31,21 +31,17 @@ EVENT_TYPES = [
 
 DEFAULT_CHECKLIST = [
     # ── Catering ──────────────────────────────────────────────────────────────
-    {"category": "Catering", "item": "Submit catering request form", "required": True},
-    {"category": "Catering", "item": "Confirm guest headcount with caterer", "required": True},
     {"category": "Catering", "item": "Confirm guest dietary and allergy accommodations", "required": True},
-    {"category": "Catering", "item": "Confirm delivery time and setup location", "required": True},
-    {"category": "Catering", "item": "Send final headcount to caterer (10 business days before)", "required": True},
+    {"category": "Catering", "item": "Submit order 10 business days in advance", "required": True},
+    {"category": "Catering", "item": "Confirm guest headcount with caterer 5 business days in advance", "required": True},
+    {"category": "Catering", "item": "Confirm delivery time and setup location 5 business days in advance", "required": True},
     # Linens
     {"category": "Catering", "item": "Order linens if needed", "required": False},
     # ── Facilities & Service Requests (FMD) ───────────────────────────────────
-    {"category": "Facilities & Service Requests", "item": "Request room setup including layout (tables, chairs)", "required": True},
+    {"category": "Facilities & Service Requests", "item": "Request room setup with a layout (tables, chairs), and equipment totals listed", "required": True},
     {"category": "Facilities & Service Requests", "item": "Confirm load-in and setup time with facilities", "required": True},
     {"category": "Facilities & Service Requests", "item": "Submit custodial services request", "required": True},
-    {"category": "Facilities & Service Requests", "item": "Request post-event room breakdown and cleanup", "required": True},
     {"category": "Facilities & Service Requests", "item": "Confirm HVAC settings for event", "required": False},
-    {"category": "Facilities & Service Requests", "item": "Request extension cords and power strips (for outdoor events)", "required": False},
-    {"category": "Facilities & Service Requests", "item": "Submit service request for landscaping and pest control (for outdoor events)", "required": False},
     # ── Parking ───────────────────────────────────────────────────────────────
     {"category": "Parking", "item": "Reserve parking lot or designated section", "required": True},
     {"category": "Parking", "item": "Request guest parking permits", "required": True},
@@ -57,18 +53,14 @@ DEFAULT_CHECKLIST = [
     {"category": "Parking", "item": "Arrange shuttle service if needed", "required": False},
     {"category": "Parking", "item": "Request traffic control for large events", "required": False},
     {"category": "Parking", "item": "Confirm parking attendant coverage", "required": False},
-    # ── UACE ──────────────────────────────────────────────────────────────────
-    {"category": "UACE", "item": "Submit event request to University Affairs Ceremonies and Events (UACE)", "required": True},
-    {"category": "UACE", "item": "Reserve room through 25Live", "required": True},
-    {"category": "UACE", "item": "Meet with Event Professional to review event logistics", "required": True},
-    {"category": "UACE", "item": "Confirm event-day point of contact", "required": True},
-    {"category": "UACE", "item": "Review event run-of-show with UACE coordinator", "required": True},
-    {"category": "UACE", "item": "Confirm event timeline and schedule with UACE", "required": True},
-    {"category": "UACE", "item": "Request AV equipment (projector, microphone, screen)", "required": False},
-    {"category": "UACE", "item": "Confirm ceremonial equipment needs (stage, podium, banners)", "required": False},
-    {"category": "UACE", "item": "Coordinate VIP or dignitary arrangements with UACE", "required": False},
-    {"category": "UACE", "item": "Review campus protocols and event procedures with UACE", "required": True},
-    {"category": "UACE", "item": "Get UACE event approval and confirmation", "required": True},
+    # ── Events Dept. ──────────────────────────────────────────────────────────
+    {"category": "Events Dept.", "item": "Reserve room through 25Live", "required": True},
+    {"category": "Events Dept.", "item": "Meet with Event Professional to review event logistics", "required": True},
+    {"category": "Events Dept.", "item": "Confirm event-day point of contact", "required": True},
+    {"category": "Events Dept.", "item": "Review event run-of-show with event professional", "required": True},
+    {"category": "Events Dept.", "item": "Request AV equipment (projector, microphone, screen) 10 business days in advance", "required": False},
+    {"category": "Events Dept.", "item": "Review campus protocols and event procedures with event professional", "required": True},
+    {"category": "Events Dept.", "item": "Get Events Dept. approval and confirmation", "required": True},
     # ── Outdoor (Outdoor Festival only) ───────────────────────────────────────
     {"category": "Outdoor", "item": "Develop and document rain / inclement weather plan", "required": True},
     {"category": "Outdoor", "item": "Identify indoor backup or covered venue", "required": True},
@@ -78,26 +70,104 @@ DEFAULT_CHECKLIST = [
     {"category": "Outdoor", "item": "Confirm tent or canopy rentals if needed", "required": False},
     {"category": "Outdoor", "item": "Arrange generator or outdoor power source", "required": False},
     {"category": "Outdoor", "item": "Confirm outdoor lighting plan", "required": False},
+    {"category": "Outdoor", "item": "Request extension cords and power strips through FMD", "required": False},
+    {"category": "Outdoor", "item": "Submit service request for landscaping and pest control through FMD", "required": False},
     # ── Billing ───────────────────────────────────────────────────────────────
-    {"category": "Billing", "item": "Request cost estimate from Facilities Management (FMD)", "required": True},
-    {"category": "Billing", "item": "Receive and review FMD estimate", "required": True},
-    {"category": "Billing", "item": "Request cost estimate from Catering vendor", "required": True},
-    {"category": "Billing", "item": "Receive and review Catering estimate", "required": True},
-    {"category": "Billing", "item": "Request cost estimate from University Police / Parking (UPD)", "required": True},
-    {"category": "Billing", "item": "Receive and review UPD estimate", "required": True},
-    {"category": "Billing", "item": "Request cost estimate from UACE", "required": True},
-    {"category": "Billing", "item": "Receive and review UACE estimate", "required": True},
     {"category": "Billing", "item": "Confirm funding source and account number", "required": True},
-    {"category": "Billing", "item": "Submit budget approval for event expenses", "required": True},
-    {"category": "Billing", "item": "Collect final invoices from all vendors", "required": True},
-    {"category": "Billing", "item": "Submit invoices for payment processing", "required": True},
+    {"category": "Billing", "item": "Receive and review FMD estimate", "required": True},
+    {"category": "Billing", "item": "Receive and review Catering estimate", "required": True},
+    {"category": "Billing", "item": "Receive and review UPD estimate", "required": True},
+    {"category": "Billing", "item": "Receive and review Events Dept. estimate", "required": True},
+    {"category": "Billing", "item": "Collect final invoice from FMD (due 20 business days after event)", "required": True},
+    {"category": "Billing", "item": "Collect final invoice from Catering (due 20 business days after event)", "required": True},
+    {"category": "Billing", "item": "Collect final invoice from Parking / UPD (due 20 business days after event)", "required": True},
+    {"category": "Billing", "item": "Collect final invoice from Events Dept. (due 20 business days after event)", "required": True},
 ]
 
 
 def load_events():
     if os.path.exists(EVENTS_FILE):
-        return pd.read_csv(EVENTS_FILE)
-    return pd.DataFrame(columns=["event_id", "event_name", "event_date", "location", "expected_attendance", "event_type", "created_date"])
+        df = pd.read_csv(EVENTS_FILE)
+        for col in ["catering_enabled", "parking_enabled"]:
+            if col not in df.columns:
+                df[col] = ""
+            df[col] = df[col].fillna("").astype(str)
+        return df
+    return pd.DataFrame(columns=["event_id", "event_name", "event_date", "location", "expected_attendance", "event_type", "created_date", "catering_enabled", "parking_enabled"])
+
+
+def is_enabled(val):
+    return str(val).strip().lower() == "true"
+
+
+def is_answered(val):
+    return str(val).strip().lower() in ["true", "false"]
+
+
+def add_business_days(event_date_str, n):
+    try:
+        d = pd.to_datetime(event_date_str).date()
+    except Exception:
+        return None
+    count = 0
+    while count < n:
+        d += timedelta(days=1)
+        if d.weekday() < 5:
+            count += 1
+    return d
+
+
+def subtract_business_days(event_date_str, n):
+    try:
+        d = pd.to_datetime(event_date_str).date()
+    except Exception:
+        return None
+    count = 0
+    while count < n:
+        d -= timedelta(days=1)
+        if d.weekday() < 5:
+            count += 1
+    return d
+
+
+def build_timeline(event_date_str, attendance, catering_on):
+    today = date.today()
+    rows = []
+
+    def add_before(task, dept, days):
+        d = subtract_business_days(event_date_str, days)
+        if d is None:
+            return
+        status = "⚠️ Past Due" if d < today else ("🔴 Due Today" if d == today else "🟢 Upcoming")
+        rows.append({"_date": d, "Phase": "Before Event", "Due Date": d.strftime("%a, %b %d %Y"), "Task": task, "Department": dept, "Status": status})
+
+    def add_after(task, dept, days):
+        d = add_business_days(event_date_str, days)
+        if d is None:
+            return
+        status = "⚠️ Past Due" if d < today else ("🔴 Due Today" if d == today else "🟢 Upcoming")
+        rows.append({"_date": d, "Phase": "After Event", "Due Date": d.strftime("%a, %b %d %Y"), "Task": task, "Department": dept, "Status": status})
+
+    add_before("Reserve room / venue", "Facilities", 20)
+    add_before("Request AV equipment (projector, microphone, screen)", "Events Dept.", 10)
+    if int(attendance) > 50:
+        add_before("Submit complex layout (>50 guests)", "Facilities", 10)
+    else:
+        add_before("Submit simple layout (≤49 guests)", "Facilities", 5)
+    if catering_on:
+        add_before("Confirm guest dietary & allergy accommodations", "Catering", 15)
+        add_before("Submit catering order", "Catering", 10)
+        add_before("Confirm guest headcount with caterer", "Catering", 5)
+        add_before("Confirm delivery time & setup location", "Catering", 5)
+    add_after("Collect final invoice from FMD", "Billing", 20)
+    add_after("Collect final invoice from Catering", "Billing", 20)
+    add_after("Collect final invoice from Parking / UPD", "Billing", 20)
+    add_after("Collect final invoice from Events Dept.", "Billing", 20)
+
+    rows.sort(key=lambda x: x["_date"])
+    for r in rows:
+        del r["_date"]
+    return rows
 
 
 def save_events(df):
@@ -107,7 +177,9 @@ def save_events(df):
 
 def load_checklist():
     if os.path.exists(CHECKLIST_FILE):
-        return pd.read_csv(CHECKLIST_FILE)
+        df = pd.read_csv(CHECKLIST_FILE)
+        df["category"] = df["category"].replace({"UACE": "Events Dept.", "University Events Department": "Events Dept."})
+        return df
     return pd.DataFrame(columns=["checklist_id", "event_id", "category", "item", "status", "notes", "required"])
 
 
@@ -119,7 +191,10 @@ def save_checklist(df):
 def create_event_checklist(event_id, event_type=""):
     checklist_df = load_checklist()
     new_items = []
+    on_demand = {"Catering", "Parking"}  # added only when planner says Yes
     for template_item in DEFAULT_CHECKLIST:
+        if template_item["category"] in on_demand:
+            continue
         if template_item["category"] == "Outdoor" and event_type != "Outdoor Festival":
             continue
         new_items.append({
@@ -135,26 +210,27 @@ def create_event_checklist(event_id, event_type=""):
     save_checklist(updated)
 
 
-def add_outdoor_checklist(event_id):
-    """Add outdoor items to an existing event that was switched to Outdoor Festival."""
+def add_category_checklist(event_id, category):
+    """Add checklist items for a category if not already present."""
     checklist_df = load_checklist()
-    existing = checklist_df[(checklist_df["event_id"] == event_id) & (checklist_df["category"] == "Outdoor")]
+    existing = checklist_df[(checklist_df["event_id"] == event_id) & (checklist_df["category"] == category)]
     if len(existing) > 0:
-        return  # already has outdoor items
+        return
     new_items = []
     for template_item in DEFAULT_CHECKLIST:
-        if template_item["category"] == "Outdoor":
+        if template_item["category"] == category:
             new_items.append({
                 "checklist_id": str(uuid.uuid4()),
                 "event_id": event_id,
-                "category": "Outdoor",
+                "category": category,
                 "item": template_item["item"],
                 "status": "Pending",
                 "notes": "",
                 "required": template_item["required"],
             })
-    updated = pd.concat([checklist_df, pd.DataFrame(new_items)], ignore_index=True)
-    save_checklist(updated)
+    if new_items:
+        updated = pd.concat([checklist_df, pd.DataFrame(new_items)], ignore_index=True)
+        save_checklist(updated)
 
 
 def get_completion_stats(event_id, checklist_df):
@@ -164,9 +240,11 @@ def get_completion_stats(event_id, checklist_df):
     stats = {}
     for cat in CATEGORIES:
         cat_items = event_items[event_items["category"] == cat]
+        if len(cat_items) == 0:
+            continue
         completed = len(cat_items[cat_items["status"] == "Completed"])
         total = len(cat_items)
-        stats[cat] = {"completed": completed, "total": total, "pct": completed / total if total > 0 else 0}
+        stats[cat] = {"completed": completed, "total": total, "pct": completed / total}
     total_completed = len(event_items[event_items["status"] == "Completed"])
     stats["Overall"] = {
         "completed": total_completed,
@@ -200,8 +278,7 @@ def render_checklist_tab(category, event_id, checklist_df):
         c1, c2, c3 = st.columns([3, 1.5, 2.5])
 
         with c1:
-            star = "⭐ " if row["required"] else ""
-            st.markdown(f"**{star}{row['item']}**")
+            st.markdown(f"**{row['item']}**")
             if row["required"]:
                 st.caption("Required")
 
@@ -263,12 +340,202 @@ if "selected_event_id" not in st.session_state:
 
 # ── App Shell ──────────────────────────────────────────────────────────────────
 st.title("🎓 Campus Event Planning Hub")
-st.markdown("Track catering, facilities, parking, UACE, and billing for all your campus events.")
+st.markdown("Track catering, facilities, parking, Events Dept., and billing for all your campus events.")
 
 st.markdown("""
 <style>
-div[data-testid="metric-container"] { background: #f8f9fa; border-radius: 10px; padding: 12px; }
-div[data-testid="stProgress"] > div > div { border-radius: 8px; }
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap');
+
+/* ── Global Font ──────────────────────────────────────────────────── */
+html, body, [class*="css"], * {
+    font-family: 'Montserrat', sans-serif !important;
+}
+
+/* ── Main App Background ─────────────────────────────────────────── */
+.stApp {
+    background: linear-gradient(160deg, #FFF4EE 0%, #FDE8E0 40%, #FDE8F2 100%) !important;
+}
+
+/* ── Sidebar — pastel lavender → blush → peach, dark text ────────── */
+[data-testid="stSidebar"] {
+    background: linear-gradient(180deg, #EDD8F8 0%, #F8D0E4 45%, #FAD8C0 80%, #FAE8B8 100%) !important;
+}
+[data-testid="stSidebar"] p,
+[data-testid="stSidebar"] span,
+[data-testid="stSidebar"] label,
+[data-testid="stSidebar"] div,
+[data-testid="stSidebar"] h1,
+[data-testid="stSidebar"] h2,
+[data-testid="stSidebar"] h3,
+[data-testid="stSidebar"] .stMarkdown {
+    color: #4A1840 !important;
+}
+[data-testid="stSidebar"] hr {
+    border-color: rgba(74,24,64,0.2) !important;
+}
+/* Sidebar primary button = selected event */
+[data-testid="stSidebar"] button[kind="primary"] {
+    background: linear-gradient(135deg, #E8A0B8, #F0C880) !important;
+    color: #4A1840 !important;
+    border: none !important;
+    font-weight: 700 !important;
+    border-radius: 8px !important;
+}
+/* Sidebar secondary button = unselected */
+[data-testid="stSidebar"] button[kind="secondary"] {
+    background: rgba(255,255,255,0.45) !important;
+    border: 1px solid rgba(74,24,64,0.25) !important;
+    color: #4A1840 !important;
+    border-radius: 8px !important;
+}
+/* Sidebar progress bar */
+[data-testid="stSidebar"] .stProgress > div > div > div > div {
+    background: linear-gradient(90deg, #E8A0B8, #F0C880) !important;
+}
+[data-testid="stSidebar"] .stProgress > div > div > div {
+    background: rgba(74,24,64,0.12) !important;
+}
+
+/* ── Main Headers ────────────────────────────────────────────────── */
+h1 { color: #C0607A !important; letter-spacing: -0.5px; }
+h2 { color: #C87858 !important; }
+h3 { color: #C88848 !important; }
+
+/* ── Metric Cards ────────────────────────────────────────────────── */
+[data-testid="metric-container"] {
+    background: linear-gradient(135deg, rgba(232,160,184,0.2), rgba(240,200,128,0.2)) !important;
+    border: 1px solid rgba(232,160,184,0.5) !important;
+    border-radius: 12px !important;
+    padding: 14px !important;
+}
+[data-testid="stMetricLabel"] { color: #C0607A !important; font-weight: 600 !important; font-size: 0.8rem !important; }
+[data-testid="stMetricValue"] { color: #4A1840 !important; font-weight: 700 !important; }
+
+/* ── Progress Bars (main) ────────────────────────────────────────── */
+.stProgress > div > div > div > div {
+    background: linear-gradient(90deg, #E8A0B8, #F0B898, #F0C880) !important;
+    border-radius: 8px !important;
+}
+.stProgress > div > div > div {
+    background: rgba(232,160,184,0.2) !important;
+    border-radius: 8px !important;
+}
+
+/* ── Primary Buttons ─────────────────────────────────────────────── */
+button[kind="primary"] {
+    background: linear-gradient(135deg, #E8A0B8, #D888A0) !important;
+    border: none !important;
+    color: #4A1840 !important;
+    border-radius: 8px !important;
+    font-weight: 700 !important;
+}
+button[kind="primary"]:hover {
+    background: linear-gradient(135deg, #D888A0, #C87090) !important;
+}
+
+/* ── Secondary Buttons ───────────────────────────────────────────── */
+button[kind="secondary"] {
+    border: 1.5px solid #E8A0B8 !important;
+    color: #C0607A !important;
+    border-radius: 8px !important;
+    font-weight: 500 !important;
+    background: rgba(255,255,255,0.6) !important;
+}
+button[kind="secondary"]:hover {
+    background: rgba(232,160,184,0.15) !important;
+}
+
+/* ── Tabs ────────────────────────────────────────────────────────── */
+[data-baseweb="tab-list"] {
+    background: transparent !important;
+    gap: 0 !important;
+    display: flex !important;
+    justify-content: center !important;
+    width: 100% !important;
+}
+[data-baseweb="tab"] {
+    color: #C0607A !important;
+    font-weight: 600 !important;
+    border-radius: 8px 8px 0 0 !important;
+    flex: 1 1 0 !important;
+    text-align: center !important;
+    justify-content: center !important;
+}
+[aria-selected="true"][data-baseweb="tab"] {
+    background: rgba(232,160,184,0.15) !important;
+    border-bottom: 3px solid #E8A0B8 !important;
+    color: #C0607A !important;
+}
+
+/* ── Expanders ───────────────────────────────────────────────────── */
+[data-testid="stExpander"] {
+    border: 1px solid rgba(232,160,184,0.45) !important;
+    border-radius: 10px !important;
+    background: rgba(255,248,244,0.85) !important;
+}
+[data-testid="stExpander"] summary {
+    font-weight: 600 !important;
+    color: #C0607A !important;
+}
+
+/* ── Select / Input borders ──────────────────────────────────────── */
+[data-baseweb="select"] > div {
+    border-color: #E8A0B8 !important;
+    border-radius: 8px !important;
+    background: rgba(255,248,244,0.95) !important;
+}
+[data-baseweb="input"] > div {
+    border-color: #E8A0B8 !important;
+    border-radius: 8px !important;
+    background: rgba(255,248,244,0.95) !important;
+}
+textarea {
+    border-color: #E8A0B8 !important;
+    border-radius: 8px !important;
+}
+
+/* ── Alert / Info boxes ──────────────────────────────────────────── */
+[data-testid="stAlert"] {
+    border-radius: 10px !important;
+    border-left: 4px solid #E8A0B8 !important;
+}
+
+/* ── Dividers ────────────────────────────────────────────────────── */
+hr {
+    border-color: rgba(232,160,184,0.35) !important;
+}
+
+/* ── Main Content Text — dark terracotta everywhere ──────────────── */
+[data-testid="stAppViewContainer"] p,
+[data-testid="stAppViewContainer"] span,
+[data-testid="stAppViewContainer"] label,
+[data-testid="stAppViewContainer"] li,
+[data-testid="stAppViewContainer"] div,
+[data-testid="stAppViewContainer"] small,
+[data-testid="stAppViewContainer"] caption,
+[data-testid="stMarkdownContainer"] p,
+[data-testid="stMarkdownContainer"] li,
+[data-testid="stMarkdownContainer"] span,
+.stCaption,
+.stSelectbox label,
+.stTextInput label,
+.stNumberInput label,
+.stDateInput label,
+.stCheckbox label,
+.stRadio label,
+.stForm label,
+[data-testid="stWidgetLabel"],
+[data-testid="stText"],
+[data-testid="stCaptionContainer"] {
+    color: #6B3020 !important;
+}
+
+/* Selectbox / input typed text */
+[data-baseweb="select"] span,
+[data-baseweb="input"] input,
+textarea {
+    color: #6B3020 !important;
+}
 </style>
 """, unsafe_allow_html=True)
 
@@ -353,6 +620,8 @@ with st.sidebar:
                     "expected_attendance": int(new_attendance),
                     "event_type": new_type,
                     "created_date": str(date.today()),
+                    "catering_enabled": "",
+                    "parking_enabled": "",
                 }])
                 events_df = pd.concat([events_df, new_row], ignore_index=True)
                 save_events(events_df)
@@ -411,85 +680,133 @@ with st.expander("✏️ Edit Event Details"):
 
 st.divider()
 
+catering_val = selected_event["catering_enabled"]
+parking_val = selected_event["parking_enabled"]
+catering_on = is_enabled(catering_val)
+parking_on = is_enabled(parking_val)
+
 # Progress overview
+checklist_df = load_checklist()
 stats = get_completion_stats(event_id, checklist_df)
 if stats:
     st.subheader("📊 Booking Progress")
-
-    icons = {
-        "Overall": "🎯",
-        "Catering": "🍽️",
-        "Facilities & Service Requests": "🏛️",
-        "Parking": "🚗",
-        "UACE": "🎓",
-        "Billing": "💰",
-        "Outdoor": "⛺",
-    }
-    short = {
-        "Overall": "Overall",
-        "Catering": "Catering",
-        "Facilities & Service Requests": "Facilities",
-        "Parking": "Parking",
-        "UACE": "UACE",
-        "Billing": "Billing",
-        "Outdoor": "Outdoor",
-    }
-
-    # Overall on its own row
     ov = stats["Overall"]
     ov_pct = int(ov["pct"] * 100)
     ov_badge = "🟢" if ov_pct == 100 else ("🟡" if ov_pct >= 50 else "🔴")
     st.markdown(f"#### {ov_badge} Overall Completion: {ov['completed']} / {ov['total']} items ({ov_pct}%)")
     st.progress(ov["pct"])
-    st.markdown("")
 
-    is_outdoor = selected_event["event_type"] == "Outdoor Festival"
-    cat_order = ["Catering", "Facilities & Service Requests", "Parking", "UACE", "Billing"]
-    if is_outdoor:
-        cat_order.append("Outdoor")
-    prog_cols = st.columns(len(cat_order))
-    for i, cat in enumerate(cat_order):
-        s = stats.get(cat, {"completed": 0, "total": 0, "pct": 0})
-        with prog_cols[i]:
-            st.metric(f"{icons[cat]} {short[cat]}", f"{s['completed']} / {s['total']}")
-            st.progress(s["pct"])
+st.divider()
+
+# ── Timeline ───────────────────────────────────────────────────────────────────
+st.subheader("📅 Deadline Timeline")
+st.caption("Business days (Mon–Fri) calculated from your event date.")
+timeline_rows = build_timeline(
+    selected_event["event_date"],
+    selected_event["expected_attendance"],
+    catering_on,
+)
+if timeline_rows:
+    tl_col, _ = st.columns([2, 5])
+    with tl_col:
+        status_filter = st.selectbox(
+            "Filter by status",
+            ["All", "🟢 Upcoming", "🔴 Due Today", "⚠️ Past Due"],
+            key="timeline_filter",
+            label_visibility="collapsed",
+        )
+    filtered = timeline_rows if status_filter == "All" else [r for r in timeline_rows if r["Status"] == status_filter]
+
+    for phase in ["Before Event", "After Event"]:
+        phase_rows = [r for r in filtered if r["Phase"] == phase]
+        label = f"{'📋 Before Event' if phase == 'Before Event' else '📬 After Event'} — {len(phase_rows)} item{'s' if len(phase_rows) != 1 else ''}"
+        with st.expander(label, expanded=(phase == "Before Event")):
+            if phase_rows:
+                for row in phase_rows:
+                    cols = st.columns([2, 5, 3, 2])
+                    cols[0].markdown(f"**{row['Due Date']}**")
+                    cols[1].markdown(row["Task"])
+                    cols[2].markdown(f"*{row['Department']}*")
+                    cols[3].markdown(row["Status"])
+                    st.divider()
+            else:
+                st.caption("No items match the selected filter.")
+else:
+    st.info("Set an event date to generate the timeline.")
 
 st.divider()
 
 # ── Checklist Tabs ─────────────────────────────────────────────────────────────
 is_outdoor = selected_event["event_type"] == "Outdoor Festival"
-tab_labels = ["🍽️ Catering", "🏛️ Facilities & Service Requests", "🚗 Parking", "🎓 UACE", "💰 Billing"]
+
+tab_defs = [
+    ("🍽️ Catering", "Catering"),
+    ("🏛️ Facilities & Service Requests", "Facilities & Service Requests"),
+    ("🚗 Parking", "Parking"),
+    ("🎓 Events Dept.", "Events Dept."),
+    ("💰 Billing", "Billing"),
+]
 if is_outdoor:
-    tab_labels.append("⛺ Outdoor")
+    tab_defs.append(("⛺ Outdoor", "Outdoor"))
 
-tabs = st.tabs(tab_labels)
+tabs = st.tabs([t[0] for t in tab_defs])
 
-with tabs[0]:
-    st.markdown("### 🍽️ Catering")
-    render_checklist_tab("Catering", event_id, checklist_df)
-
-with tabs[1]:
-    st.markdown("### 🏛️ Facilities & Service Requests (FMD)")
-    render_checklist_tab("Facilities & Service Requests", event_id, checklist_df)
-
-with tabs[2]:
-    st.markdown("### 🚗 Parking (UPD)")
-    render_checklist_tab("Parking", event_id, checklist_df)
-
-with tabs[3]:
-    st.markdown("### 🎓 University Affairs Ceremonies and Events (UACE)")
-    render_checklist_tab("UACE", event_id, checklist_df)
-
-with tabs[4]:
-    st.markdown("### 💰 Billing & Estimates")
-    st.info("Track cost estimates received from each department. Mark as **Completed** once you have a final signed estimate.")
-    render_checklist_tab("Billing", event_id, checklist_df)
-
-if is_outdoor:
-    with tabs[5]:
-        st.markdown("### ⛺ Outdoor Planning")
-        st.info("These items apply because this event is an **Outdoor Festival**. Complete the rain plan early so all vendors are aligned.")
-        render_checklist_tab("Outdoor", event_id, checklist_df)
+for tab, (label, category) in zip(tabs, tab_defs):
+    with tab:
+        if category == "Catering":
+            catering_index = (0 if catering_on else 1) if is_answered(catering_val) else None
+            catering_answer = st.radio(
+                "Will catering be offered?",
+                ["Yes", "No"],
+                index=catering_index,
+                horizontal=True,
+                key="catering_radio",
+            )
+            if catering_answer is not None:
+                new_val = str(catering_answer == "Yes")
+                if str(catering_val) != new_val:
+                    events_df.loc[events_df["event_id"] == event_id, "catering_enabled"] = new_val
+                    save_events(events_df)
+                    if catering_answer == "Yes":
+                        add_category_checklist(event_id, "Catering")
+                    st.rerun()
+            if catering_on:
+                st.divider()
+                render_checklist_tab("Catering", event_id, checklist_df)
+        elif category == "Parking":
+            parking_index = (0 if parking_on else 1) if is_answered(parking_val) else None
+            parking_answer = st.radio(
+                "Will parking arrangements be needed?",
+                ["Yes", "No"],
+                index=parking_index,
+                horizontal=True,
+                key="parking_radio",
+            )
+            if parking_answer is not None:
+                new_val = str(parking_answer == "Yes")
+                if str(parking_val) != new_val:
+                    events_df.loc[events_df["event_id"] == event_id, "parking_enabled"] = new_val
+                    save_events(events_df)
+                    if parking_answer == "Yes":
+                        add_category_checklist(event_id, "Parking")
+                    st.rerun()
+            if parking_on:
+                st.divider()
+                render_checklist_tab("Parking", event_id, checklist_df)
+        elif category == "Facilities & Service Requests":
+            st.markdown("### 🏛️ Facilities & Service Requests (FMD)")
+            render_checklist_tab(category, event_id, checklist_df)
+        elif category == "Events Dept.":
+            st.markdown("### 🎓 Events Dept.")
+            render_checklist_tab(category, event_id, checklist_df)
+        elif category == "Billing":
+            st.markdown("### 💰 Billing & Estimates")
+            st.info("Track cost estimates from each department. Mark as **Completed** once you have a final signed estimate.")
+            render_checklist_tab(category, event_id, checklist_df)
+        elif category == "Outdoor":
+            st.markdown("### ⛺ Outdoor Planning")
+            st.info("Complete the rain plan early so all vendors are aligned.")
+            render_checklist_tab(category, event_id, checklist_df)
 
 st.divider()
 
