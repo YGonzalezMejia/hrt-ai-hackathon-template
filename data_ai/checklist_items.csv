@@ -1,0 +1,101 @@
+checklist_id,event_id,category,item,status,notes,required
+adad24a9-de3b-46db-92de-2a400cd44fd5,9f64f43c-1213-423c-96d2-a0a5c073e0ba,Catering,Submit catering request form,Pending,,True
+e88e9dc3-03a4-46ff-8c8c-a8c0d0136c5d,9f64f43c-1213-423c-96d2-a0a5c073e0ba,Catering,Confirm guest headcount with caterer,Pending,,True
+57a537a7-32d8-476e-85f0-dc6e12bdfd82,9f64f43c-1213-423c-96d2-a0a5c073e0ba,Catering,Confirm guest dietary and allergy accommodations,Pending,,True
+6ee95dac-bfe4-4043-a648-82e04539181e,9f64f43c-1213-423c-96d2-a0a5c073e0ba,Catering,Confirm delivery time and setup location,Pending,,True
+87e583ce-7219-42e7-bb60-4f16b7ae4f1f,9f64f43c-1213-423c-96d2-a0a5c073e0ba,Catering,Send final headcount to caterer (10 business days before),Pending,,True
+6910c615-e513-4978-9191-b64006bfd558,9f64f43c-1213-423c-96d2-a0a5c073e0ba,Catering,Order linens if needed,Pending,,False
+a5754251-5595-47db-b00b-7fab29d3da89,9f64f43c-1213-423c-96d2-a0a5c073e0ba,Facilities & Service Requests,"Request room setup including layout (tables, chairs)",Pending,,True
+69aca378-e79a-46cc-807b-e71fed56f0f4,9f64f43c-1213-423c-96d2-a0a5c073e0ba,Facilities & Service Requests,Confirm load-in and setup time with facilities,Pending,,True
+0b6391c0-1cba-43d2-b026-62b96fdcdac6,9f64f43c-1213-423c-96d2-a0a5c073e0ba,Facilities & Service Requests,Submit custodial services request,Pending,,True
+d3445d93-d34e-4112-b22d-5cfd9c46f3dc,9f64f43c-1213-423c-96d2-a0a5c073e0ba,Facilities & Service Requests,Request post-event room breakdown and cleanup,Pending,,True
+484f6fc9-06c7-461c-8f7d-a62057ebc556,9f64f43c-1213-423c-96d2-a0a5c073e0ba,Facilities & Service Requests,Confirm HVAC settings for event,Pending,,False
+55e19694-921c-418b-94d0-da1f9ef3083a,9f64f43c-1213-423c-96d2-a0a5c073e0ba,Facilities & Service Requests,Request extension cords and power strips (for outdoor events),Pending,,False
+4e7b0763-1b8a-4e2a-add3-009cc99bea55,9f64f43c-1213-423c-96d2-a0a5c073e0ba,Facilities & Service Requests,Submit service request for landscaping and pest control (for outdoor events),Pending,,False
+04817d17-b8f9-4980-9bda-e41c20eb100b,9f64f43c-1213-423c-96d2-a0a5c073e0ba,Parking,Reserve parking lot or designated section,Pending,,True
+5b3fb6ba-1e26-4af3-8802-273b9e19b78d,9f64f43c-1213-423c-96d2-a0a5c073e0ba,Parking,Request guest parking permits,Pending,,True
+fcd94ca5-eef1-4c67-9ede-f63eb4747205,9f64f43c-1213-423c-96d2-a0a5c073e0ba,Parking,Arrange ADA accessible parking spaces,Pending,,True
+23e1d7d8-7827-4dcc-a90a-2a85e3092c04,9f64f43c-1213-423c-96d2-a0a5c073e0ba,Parking,Coordinate with campus parking services office (UPD),Pending,,True
+14e9298d-2c06-4479-ac0d-04592d41f8f7,9f64f43c-1213-423c-96d2-a0a5c073e0ba,Parking,Get parking confirmation number,Pending,,True
+4bd81e08-e125-4c17-8873-4e4c98201183,9f64f43c-1213-423c-96d2-a0a5c073e0ba,Parking,Send parking instructions and map to attendees,Pending,,True
+7846bd07-b675-4db7-9917-2dc6e99959af,9f64f43c-1213-423c-96d2-a0a5c073e0ba,Parking,Request parking signage for event,Pending,,False
+768a5b7e-08fb-48c7-8cde-337ab2303e3d,9f64f43c-1213-423c-96d2-a0a5c073e0ba,Parking,Arrange shuttle service if needed,Pending,,False
+a40022e4-249d-4dac-b427-994f4a52f673,9f64f43c-1213-423c-96d2-a0a5c073e0ba,Parking,Request traffic control for large events,Pending,,False
+12e18c29-c71b-4ff3-9d0c-372ff6900d0d,9f64f43c-1213-423c-96d2-a0a5c073e0ba,Parking,Confirm parking attendant coverage,Pending,,False
+32e75dd2-ad93-4b4e-b148-f1eaf9f6be0a,9f64f43c-1213-423c-96d2-a0a5c073e0ba,UACE,Submit event request to University Affairs Ceremonies and Events (UACE),Pending,,True
+7832786d-1e7b-4cce-853f-6485460cbec1,9f64f43c-1213-423c-96d2-a0a5c073e0ba,UACE,Reserve room through 25Live,Pending,,True
+0bf766b1-8d95-49fe-800e-17b701806aa6,9f64f43c-1213-423c-96d2-a0a5c073e0ba,UACE,Meet with Event Professional to review event logistics,Pending,,True
+654a4c97-93cc-432e-8e48-d0b05993cc44,9f64f43c-1213-423c-96d2-a0a5c073e0ba,UACE,Confirm event-day point of contact,Pending,,True
+5480314f-ba86-46fb-8a40-92b58f7da569,9f64f43c-1213-423c-96d2-a0a5c073e0ba,UACE,Review event run-of-show with UACE coordinator,Pending,,True
+a9329da2-aabd-4670-bccf-330fa8a015bb,9f64f43c-1213-423c-96d2-a0a5c073e0ba,UACE,Confirm event timeline and schedule with UACE,Pending,,True
+98c1cdf2-9fba-4960-87af-48824a56b891,9f64f43c-1213-423c-96d2-a0a5c073e0ba,UACE,"Request AV equipment (projector, microphone, screen)",Pending,,False
+1392e5df-643b-4184-a1f8-54632e980b1e,9f64f43c-1213-423c-96d2-a0a5c073e0ba,UACE,"Confirm ceremonial equipment needs (stage, podium, banners)",Pending,,False
+fa6c9ec2-9dd2-49f0-abc6-80077b4ca136,9f64f43c-1213-423c-96d2-a0a5c073e0ba,UACE,Coordinate VIP or dignitary arrangements with UACE,Pending,,False
+d50e24fa-9637-4d6e-bd1f-ab489465db47,9f64f43c-1213-423c-96d2-a0a5c073e0ba,UACE,Review campus protocols and event procedures with UACE,Pending,,True
+97b71926-4c4b-42a1-81d8-1b8226ee0944,9f64f43c-1213-423c-96d2-a0a5c073e0ba,UACE,Get UACE event approval and confirmation,Pending,,True
+106bf10b-b966-4a08-910c-fa7802f4b8db,9f64f43c-1213-423c-96d2-a0a5c073e0ba,Billing,Request cost estimate from Facilities Management (FMD),Pending,,True
+e0fb3f05-e368-4b0c-9c4a-4fb3a6519e84,9f64f43c-1213-423c-96d2-a0a5c073e0ba,Billing,Receive and review FMD estimate,Pending,,True
+90a00f95-2ac1-4413-b297-db20a184dd54,9f64f43c-1213-423c-96d2-a0a5c073e0ba,Billing,Request cost estimate from Catering vendor,Pending,,True
+50bcbd91-ab2e-49e9-8eb3-d295c9dc950a,9f64f43c-1213-423c-96d2-a0a5c073e0ba,Billing,Receive and review Catering estimate,Pending,,True
+655cff22-a25d-4bc9-aeff-b3e002cbbf85,9f64f43c-1213-423c-96d2-a0a5c073e0ba,Billing,Request cost estimate from University Police / Parking (UPD),Pending,,True
+0ce34d7b-4048-48e9-b15b-1e45320c35cc,9f64f43c-1213-423c-96d2-a0a5c073e0ba,Billing,Receive and review UPD estimate,Pending,,True
+9ba5ff1f-39a0-4051-bb8a-b6c660469ad6,9f64f43c-1213-423c-96d2-a0a5c073e0ba,Billing,Request cost estimate from UACE,Pending,,True
+216519bf-3d65-4fda-a77b-9a9648f40c23,9f64f43c-1213-423c-96d2-a0a5c073e0ba,Billing,Receive and review UACE estimate,Pending,,True
+59c24ad9-45aa-4e6b-a825-508ff562fdd0,9f64f43c-1213-423c-96d2-a0a5c073e0ba,Billing,Confirm funding source and account number,Pending,,True
+73410ccb-8b9a-4400-8ec1-f99db8227242,9f64f43c-1213-423c-96d2-a0a5c073e0ba,Billing,Submit budget approval for event expenses,Pending,,True
+7fed104a-8ca3-42fe-92c3-1a73807a56b8,9f64f43c-1213-423c-96d2-a0a5c073e0ba,Billing,Collect final invoices from all vendors,Pending,,True
+8dee028d-973f-4d30-b181-a8762d703d4e,9f64f43c-1213-423c-96d2-a0a5c073e0ba,Billing,Submit invoices for payment processing,Pending,,True
+fff6b109-804f-40e5-8186-8ae92cd4256c,69b2db16-0c77-41c1-8fb0-369e6d292a42,Catering,Submit catering request form,Pending,,True
+fb9414d8-97e6-43ac-9d60-513b5ea8b4b4,69b2db16-0c77-41c1-8fb0-369e6d292a42,Catering,Confirm guest headcount with caterer,Pending,,True
+8daa4de2-11cf-4bfd-8f82-0fc1f43658da,69b2db16-0c77-41c1-8fb0-369e6d292a42,Catering,Confirm guest dietary and allergy accommodations,Pending,,True
+509f12ba-beb4-438a-853a-2d6efcb34c47,69b2db16-0c77-41c1-8fb0-369e6d292a42,Catering,Confirm delivery time and setup location,Pending,,True
+ee2228c2-54dd-4304-9096-c4523efb5137,69b2db16-0c77-41c1-8fb0-369e6d292a42,Catering,Send final headcount to caterer (10 business days before),Pending,,True
+d86ac485-5b4e-4ed3-9835-58a717196644,69b2db16-0c77-41c1-8fb0-369e6d292a42,Catering,Order linens if needed,Pending,,False
+4403bb84-62de-4057-9eac-74ac5a083133,69b2db16-0c77-41c1-8fb0-369e6d292a42,Facilities & Service Requests,"Request room setup including layout (tables, chairs)",Pending,,True
+104041ef-c043-4684-8218-ac4bc23ef350,69b2db16-0c77-41c1-8fb0-369e6d292a42,Facilities & Service Requests,Confirm load-in and setup time with facilities,Pending,,True
+f12d96c6-3782-4ebf-9aa4-34c39e8af908,69b2db16-0c77-41c1-8fb0-369e6d292a42,Facilities & Service Requests,Submit custodial services request,Pending,,True
+6dbb83df-65eb-47ce-b0cc-22aca2cd7d0a,69b2db16-0c77-41c1-8fb0-369e6d292a42,Facilities & Service Requests,Request post-event room breakdown and cleanup,Pending,,True
+e59035c7-02e4-4664-8835-9c07c57d6946,69b2db16-0c77-41c1-8fb0-369e6d292a42,Facilities & Service Requests,Confirm HVAC settings for event,Pending,,False
+9a94d743-35bb-4199-b551-b850952dc92b,69b2db16-0c77-41c1-8fb0-369e6d292a42,Facilities & Service Requests,Request extension cords and power strips (for outdoor events),Pending,,False
+5a4b787a-38dd-47c3-bb2e-98081d1d327c,69b2db16-0c77-41c1-8fb0-369e6d292a42,Facilities & Service Requests,Submit service request for landscaping and pest control (for outdoor events),Pending,,False
+aec3324f-fc90-4c3d-b4a7-fc761e83746b,69b2db16-0c77-41c1-8fb0-369e6d292a42,Parking,Reserve parking lot or designated section,Pending,,True
+4d22ab23-9ce0-4797-933a-23a0fe4ae351,69b2db16-0c77-41c1-8fb0-369e6d292a42,Parking,Request guest parking permits,Pending,,True
+251e6b82-2432-4da0-a3af-97c688d15c7c,69b2db16-0c77-41c1-8fb0-369e6d292a42,Parking,Arrange ADA accessible parking spaces,Pending,,True
+a6368944-7f2d-4ae1-a1b7-17a226f4cd2a,69b2db16-0c77-41c1-8fb0-369e6d292a42,Parking,Coordinate with campus parking services office (UPD),Pending,,True
+972b4588-0903-4971-88f5-a2e985aad379,69b2db16-0c77-41c1-8fb0-369e6d292a42,Parking,Get parking confirmation number,Pending,,True
+32e9b7f9-f5cc-40b8-9aef-b2d519d95457,69b2db16-0c77-41c1-8fb0-369e6d292a42,Parking,Send parking instructions and map to attendees,Pending,,True
+bb37c09a-3a63-4604-bbbe-931936bc2cfe,69b2db16-0c77-41c1-8fb0-369e6d292a42,Parking,Request parking signage for event,Pending,,False
+5c3b2ff1-9987-4c47-a803-5e56fa92ab11,69b2db16-0c77-41c1-8fb0-369e6d292a42,Parking,Arrange shuttle service if needed,Pending,,False
+30e76894-9fdd-4994-a931-e7a2e7d76e92,69b2db16-0c77-41c1-8fb0-369e6d292a42,Parking,Request traffic control for large events,Pending,,False
+8827e771-5863-4aa2-9464-d71483faf63c,69b2db16-0c77-41c1-8fb0-369e6d292a42,Parking,Confirm parking attendant coverage,Pending,,False
+79bdf20a-99c3-4808-8d5e-63d099e901c0,69b2db16-0c77-41c1-8fb0-369e6d292a42,UACE,Submit event request to University Affairs Ceremonies and Events (UACE),Pending,,True
+5a644458-de3b-4d4a-86b2-b6c3e64ce8dd,69b2db16-0c77-41c1-8fb0-369e6d292a42,UACE,Reserve room through 25Live,Pending,,True
+b8b5bbcb-6ae9-4d36-8ad4-6127242ec5f5,69b2db16-0c77-41c1-8fb0-369e6d292a42,UACE,Meet with Event Professional to review event logistics,Pending,,True
+659e4c52-b9b4-4136-bea4-d62da2a89ac1,69b2db16-0c77-41c1-8fb0-369e6d292a42,UACE,Confirm event-day point of contact,Pending,,True
+0d0bf8b6-2bea-45a5-9b70-5d4aeef00348,69b2db16-0c77-41c1-8fb0-369e6d292a42,UACE,Review event run-of-show with UACE coordinator,Pending,,True
+56d4a3b2-1584-46c3-b8cd-519bff40a750,69b2db16-0c77-41c1-8fb0-369e6d292a42,UACE,Confirm event timeline and schedule with UACE,Pending,,True
+e8e319cc-edb0-48b2-98b4-ce496c2099b4,69b2db16-0c77-41c1-8fb0-369e6d292a42,UACE,"Request AV equipment (projector, microphone, screen)",Pending,,False
+b6820985-2700-47a3-9a1b-d2f7eca7f656,69b2db16-0c77-41c1-8fb0-369e6d292a42,UACE,"Confirm ceremonial equipment needs (stage, podium, banners)",Pending,,False
+c27bbae2-2c92-436b-826a-34f474199376,69b2db16-0c77-41c1-8fb0-369e6d292a42,UACE,Coordinate VIP or dignitary arrangements with UACE,Pending,,False
+4cab086b-7f3c-4975-bffc-ea3d8fc29941,69b2db16-0c77-41c1-8fb0-369e6d292a42,UACE,Review campus protocols and event procedures with UACE,Pending,,True
+8bb5fac2-651e-4a37-a28b-4b9924266c00,69b2db16-0c77-41c1-8fb0-369e6d292a42,UACE,Get UACE event approval and confirmation,Pending,,True
+8da70f56-90a7-4364-9138-757cb7519b35,69b2db16-0c77-41c1-8fb0-369e6d292a42,Outdoor,Develop and document rain / inclement weather plan,Pending,,True
+c414c871-41eb-4fc1-adae-eb07ee676f9d,69b2db16-0c77-41c1-8fb0-369e6d292a42,Outdoor,Identify indoor backup or covered venue,Pending,,True
+442e62ed-4037-4ef3-af53-f44df64fdef3,69b2db16-0c77-41c1-8fb0-369e6d292a42,Outdoor,Set weather cancellation threshold and decision timeline,Pending,,True
+e49d851a-5128-45db-87c7-d9516e18f6e5,69b2db16-0c77-41c1-8fb0-369e6d292a42,Outdoor,"Communicate rain plan to all vendors, staff, and attendees",Pending,,True
+34922389-4382-438d-a776-c8cb94250aaf,69b2db16-0c77-41c1-8fb0-369e6d292a42,Outdoor,Monitor weather forecast in the days leading up to event,Pending,,True
+41c7562f-8e63-4e02-b331-3920d2dabe3d,69b2db16-0c77-41c1-8fb0-369e6d292a42,Outdoor,Confirm tent or canopy rentals if needed,Pending,,False
+39a89920-6820-4403-8f1f-2fd18d6a3e51,69b2db16-0c77-41c1-8fb0-369e6d292a42,Outdoor,Arrange generator or outdoor power source,Pending,,False
+5e582412-b0d9-4c6d-886d-a0c2004f11a9,69b2db16-0c77-41c1-8fb0-369e6d292a42,Outdoor,Confirm outdoor lighting plan,Pending,,False
+f536697f-766c-4d32-a089-035ecd95be80,69b2db16-0c77-41c1-8fb0-369e6d292a42,Billing,Request cost estimate from Facilities Management (FMD),Pending,,True
+a83f841b-d82d-403e-952e-a7afb779056a,69b2db16-0c77-41c1-8fb0-369e6d292a42,Billing,Receive and review FMD estimate,Pending,,True
+8606cb30-274e-4bcf-929a-a68b78b3b444,69b2db16-0c77-41c1-8fb0-369e6d292a42,Billing,Request cost estimate from Catering vendor,Pending,,True
+f012963f-613b-4fa5-91ec-6979bb2c5e5a,69b2db16-0c77-41c1-8fb0-369e6d292a42,Billing,Receive and review Catering estimate,Pending,,True
+e7854277-a80c-4c34-b063-68cfad498be1,69b2db16-0c77-41c1-8fb0-369e6d292a42,Billing,Request cost estimate from University Police / Parking (UPD),Pending,,True
+7db43274-7b23-41de-baea-6e5944c776cf,69b2db16-0c77-41c1-8fb0-369e6d292a42,Billing,Receive and review UPD estimate,Pending,,True
+201b88ed-cc4e-44e9-b046-3a2a05c2e5f5,69b2db16-0c77-41c1-8fb0-369e6d292a42,Billing,Request cost estimate from UACE,Pending,,True
+8504df81-2708-46cf-bed7-3eba74df737a,69b2db16-0c77-41c1-8fb0-369e6d292a42,Billing,Receive and review UACE estimate,Pending,,True
+fe0a706b-28e2-4251-b7ed-49a4c998a1ef,69b2db16-0c77-41c1-8fb0-369e6d292a42,Billing,Confirm funding source and account number,Pending,,True
+6c81f713-4aa0-48aa-b628-a7225d25586b,69b2db16-0c77-41c1-8fb0-369e6d292a42,Billing,Submit budget approval for event expenses,Pending,,True
+ce11a432-9e9f-4bf0-ac3e-ec2c9bdf9f3d,69b2db16-0c77-41c1-8fb0-369e6d292a42,Billing,Collect final invoices from all vendors,Pending,,True
+5c8700af-4c77-47eb-abbe-6c29404f5fa4,69b2db16-0c77-41c1-8fb0-369e6d292a42,Billing,Submit invoices for payment processing,Pending,,True
