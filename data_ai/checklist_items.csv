@@ -4,8 +4,6 @@ c13a775a-0d41-4ffc-bd5f-dff4f6a819bd,058beda8-67ea-41c6-89fb-5abf29cb43dc,Facili
 61259a80-2eb2-4e0f-bd78-07de6a2dd2ae,058beda8-67ea-41c6-89fb-5abf29cb43dc,Facilities & Service Requests,Submit custodial services request,Pending,,True
 c1d8111d-e0c3-4cf1-9baa-1e373c9d56e8,058beda8-67ea-41c6-89fb-5abf29cb43dc,Facilities & Service Requests,Request post-event room breakdown and cleanup,Pending,,True
 b15432f6-4074-4aec-bf91-d3639b25d228,058beda8-67ea-41c6-89fb-5abf29cb43dc,Facilities & Service Requests,Confirm HVAC settings for event,Pending,,False
-5ad79e1d-8ed8-4293-9cc1-e5835fd81a92,058beda8-67ea-41c6-89fb-5abf29cb43dc,Facilities & Service Requests,Request extension cords and power strips (for outdoor events),Pending,,False
-6518c993-7651-4b74-bd81-7ad964209a34,058beda8-67ea-41c6-89fb-5abf29cb43dc,Facilities & Service Requests,Submit service request for landscaping and pest control (for outdoor events),Pending,,False
 24005288-86c3-4d53-8d65-d0e91e7ea34e,058beda8-67ea-41c6-89fb-5abf29cb43dc,Events Dept.,Reserve room through 25Live,Pending,,True
 c1c3b2ef-de29-4f74-ba17-b88655b9bfb6,058beda8-67ea-41c6-89fb-5abf29cb43dc,Events Dept.,Meet with Event Professional to review event logistics,Pending,,True
 83e8a2c0-a3dd-497c-8552-5761373aadaa,058beda8-67ea-41c6-89fb-5abf29cb43dc,Events Dept.,Confirm event-day point of contact,Pending,,True
@@ -18,11 +16,11 @@ b1d5c477-aa8e-4cb5-aff4-92f911f0ef32,058beda8-67ea-41c6-89fb-5abf29cb43dc,Events
 2c3aec8c-8c37-4c1f-b01f-b1fbd7c908b8,058beda8-67ea-41c6-89fb-5abf29cb43dc,Billing,Receive and review UPD estimate,Pending,,True
 f7d8deff-dab2-4fa6-8c18-cc15e69389e7,058beda8-67ea-41c6-89fb-5abf29cb43dc,Billing,Receive and review Events Dept. estimate,Pending,,True
 c2e6bfa3-022a-4cad-9e65-58d979acc074,058beda8-67ea-41c6-89fb-5abf29cb43dc,Billing,Confirm funding source and account number,Pending,,True
-6f0e7169-4b48-4a7e-97d5-932e4ab8c7c6,058beda8-67ea-41c6-89fb-5abf29cb43dc,Catering,Confirm guest dietary and allergy accommodations,Pending,,True
+6f0e7169-4b48-4a7e-97d5-932e4ab8c7c6,058beda8-67ea-41c6-89fb-5abf29cb43dc,Catering,Confirm guest dietary and allergy accommodations,Completed,,True
 f2fc58ea-6798-456c-95cb-623136bff56d,058beda8-67ea-41c6-89fb-5abf29cb43dc,Catering,Submit order 10 business days in advance,Pending,,True
 cf5ba9b7-ccfa-4539-bc31-81e6f8bb5962,058beda8-67ea-41c6-89fb-5abf29cb43dc,Catering,Confirm guest headcount with caterer 5 business days in advance,Pending,,True
 8c6f8ec9-52df-4921-be97-84b457404077,058beda8-67ea-41c6-89fb-5abf29cb43dc,Catering,Confirm delivery time and setup location,Pending,,True
-75e873ae-4676-4358-85c7-51e451d645f3,058beda8-67ea-41c6-89fb-5abf29cb43dc,Catering,Order linens if needed,Pending,,False
+75e873ae-4676-4358-85c7-51e451d645f3,058beda8-67ea-41c6-89fb-5abf29cb43dc,Catering,Order linens if needed,In Progress,,False
 ca68f0c5-b1e1-4775-8ae8-579df7aa62b7,058beda8-67ea-41c6-89fb-5abf29cb43dc,Parking,Reserve parking lot or designated section,Pending,,True
 a3768293-d8e8-464a-b273-9ed30843cb08,058beda8-67ea-41c6-89fb-5abf29cb43dc,Parking,Request guest parking permits,Pending,,True
 2d45b026-2b4c-4d65-b30d-577219115f16,058beda8-67ea-41c6-89fb-5abf29cb43dc,Parking,Arrange ADA accessible parking spaces,Pending,,True

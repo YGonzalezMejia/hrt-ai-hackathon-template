@@ -1,2 +1,2 @@
 event_id,event_name,event_date,location,expected_attendance,event_type,created_date,catering_enabled,parking_enabled,_date_parsed
-058beda8-67ea-41c6-89fb-5abf29cb43dc,test,2026-05-16,grass,50,Reception,2026-05-07,False,True,2026-05-16
+058beda8-67ea-41c6-89fb-5abf29cb43dc,Farewell Reception,2026-05-16,Alumni Center,100,Reception,2026-05-07,True,True,2026-05-16

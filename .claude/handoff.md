@@ -1,42 +1,48 @@
-# Handoff — 2026-05-07
+# Handoff — 2026-05-08
 
 ## Summary
-- Built a full multi-event campus event planning app in `app.py` from scratch
-- App manages Catering, Facilities & Service Requests (FMD), Parking (UPD), UACE, and Billing checklists
-- Catering and Parking are now opt-in per event (Yes/No radio buttons unlock the tab + checklist)
-- Outdoor Festival event type unlocks a dedicated ⛺ Outdoor tab (rain plan, backup venue, etc.)
-- Sidebar replaced dropdown with event cards showing live progress bars; past events go to a collapsible Archives section
-- Event details (name, date, venue, attendance, type) are editable in-app via an expander
-- Applied a pastel sunset color palette (lavender → blush → peach sidebar; warm cream main background) with Montserrat font
-- All main content text set to dark terracotta (#6B3020) for readability on light pastel background
-- Checklist items trimmed and refined across Catering, FMD, UACE, and Parking per user feedback
-- Saved a git checkpoint at commit `1d5ae7a`
+- Fixed catering tab error (TypeError when selecting Yes) — `catering_enabled`/`parking_enabled` columns were loading as float64 from CSV; added `.fillna("").astype(str)` on load
+- Reordered and renamed Catering checklist items: dietary/allergy first, submit order 10 biz days, confirm headcount 5 biz days, confirm delivery 5 biz days
+- Renamed "UACE" → "University Events Department" → "Events Dept." throughout app and migrated existing CSV data each time
+- Removed several Events Dept. checklist items: Submit event request (UACE), Confirm event timeline, Confirm ceremonial equipment, Coordinate VIP arrangements
+- Edited items: run-of-show and campus protocols now say "with event professional"; AV equipment now says "10 business days in advance"
+- Renamed FMD item to "Request room setup with a layout (tables, chairs), and equipment totals listed"
+- Removed "Request post-event room breakdown and cleanup" from FMD
+- Moved outdoor-only FMD items (extension cords, landscaping/pest control) to Outdoor tab, labeled "through FMD"
+- Rebuilt Billing tab: removed cost estimate requests, added 4 post-event invoice items (FMD, Catering, Parking/UPD, Events Dept.) due 20 biz days after event; "Confirm funding source" moved to top
+- Added `add_business_days()` helper and updated `build_timeline()` to show post-event invoice deadlines
+- Redesigned timeline: grouped into "📋 Before Event" / "📬 After Event" collapsible sections + status filter dropdown (All / Upcoming / Due Today / Past Due); Before Event expanded by default
+- Moved catering and parking Yes/No radios inside their respective tabs (removed standalone Services section); Catering and Parking tabs are now always visible
+- Added CSS to hide Streamlit toolbar/keyboard shortcut badge using exact data-testid selectors found in JS bundle
+- Added bottom padding and margin above Danger Zone to fix visual overlap
+- Tabs styled to fill full width with equal spacing (flex: 1)
+- Saved git checkpoint at commit `0576704`
 
 ## Current State
-- **Branch:** main (1 commit ahead of origin, plus uncommitted changes to `app.py` and `data_ai/events.csv`)
+- **Branch:** main (2 commits ahead of origin, plus uncommitted changes to `app.py`)
 - **Server:** Streamlit running on port 8501
 - **App URL:** https://orange-journey-5vq59rgvjj9qf7q9r-8501.app.github.dev
-- **Data files:** `data_ai/events.csv` and `data_ai/checklist_items.csv` exist with live data
-- **Last checkpoint tag:** `checkpoint` → commit `1d5ae7a`
+- **Data files:** `data_ai/events.csv` and `data_ai/checklist_items.csv` exist with migrated data
+- **Last checkpoint tag:** `checkpoint` → commit `0576704`
+- **Uncommitted:** `app.py` has CSS and layout changes from this session not yet committed
 
 ## Next Steps
-- Add more outdoor checklist items beyond the rain plan (user said "for now" — more to come)
-- Consider adding a print/export view so planners can share a checklist summary (PDF or email)
-- Potentially add a deadline/due-date field per checklist item
-- User may want to add more event types or further refine checklist items per tab
+- Verify the keyboard/toolbar badge is fully hidden after the CSS fix (user was still seeing it at end of session)
+- Verify the event details / delete event overlap is resolved
+- User may want to add more outdoor checklist items (mentioned "for now" in earlier session)
+- Consider a print/export view (PDF or shareable checklist summary)
 - Push latest changes to GitHub origin when ready
 
 ## Key Decisions
-- **Catering & Parking are opt-in:** Only shown when planner explicitly answers Yes — keeps the interface clean for events that don't need them
-- **Facilities, UACE, Billing always visible:** These were decided to be required for all campus events
-- **Checklist items stored per-event in CSV:** `data_ai/checklist_items.csv` uses event_id as foreign key; new events get a fresh copy of the template
-- **On-demand checklist creation:** `add_category_checklist()` only adds items if that category doesn't already exist for the event — safe to call repeatedly
-- **Outdoor items skip by default:** `create_event_checklist()` skips Outdoor and the opt-in categories (Catering, Parking); they are added via `add_category_checklist()` when unlocked
-- **Session state for selected event:** `st.session_state.selected_event_id` tracks the active event across reruns instead of a dropdown
+- **Events Dept. migration:** Each rename required both a DEFAULT_CHECKLIST update AND a CSV data migration (sed + Python script) + a runtime migration guard in `load_checklist()` — pattern to follow for any future renames
+- **Post-event timeline deadlines:** `add_business_days()` counts forward from event date; timeline now has both pre- and post-event phases
+- **Catering/Parking always-visible tabs:** Removed conditional tab rendering; the Yes/No radio now lives inside the tab so planners always see it — checklist only appears below if Yes
+- **Timeline layout:** Before Event section is expanded by default; After Event is collapsed — reduces overwhelm while keeping invoice deadlines accessible
+- **Toolbar hiding:** Used exact `data-testid` values from Streamlit JS bundle (`stAppToolbar`, `stToolbarActionButton`, `stToolbarActionButtonLabel`, etc.) rather than guessing
 
 ## Watchouts
-- **Existing events in CSV won't get new checklist items** if DEFAULT_CHECKLIST is updated — only new events get the latest template. To update existing events, the user would need to delete and recreate them, or a migration function would need to be written.
-- **`catering_enabled` / `parking_enabled` stored as string "True"/"False"/""** in CSV — the helpers `is_enabled()` and `is_answered()` handle the conversion. Don't compare directly with Python booleans.
-- **Streamlit port 8501 may already be in use** on session resume — use `fuser -k 8501/tcp` before restarting.
-- **CSS selectors may need updating** if Streamlit is upgraded — the pastel theme relies on internal `data-testid` attributes that can change between versions.
-- **Data files are committed** in the checkpoint — if the user clears their test data (`data_ai/` CSVs), they'll need to recreate events from scratch.
+- **Existing event checklists won't get DEFAULT_CHECKLIST changes automatically** — only new events get the latest template. Use a Python migration script (as done this session) to patch existing CSV rows
+- **`catering_enabled` / `parking_enabled` stored as string "True"/"False"/""** — `is_enabled()` and `is_answered()` helpers handle conversion; never compare directly with Python booleans
+- **Keyboard badge CSS** — uses internal Streamlit `data-testid` attributes that may change on Streamlit upgrades; if it reappears after an upgrade, re-run the selector search in the JS bundle
+- **Uncommitted changes** — `app.py` has unsaved changes not yet in the checkpoint; run `/checkpoint` at the start of next session after verifying fixes
+- **2 commits ahead of origin** — changes have not been pushed to GitHub remote yet

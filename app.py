@@ -4,7 +4,7 @@ import os
 from datetime import date, timedelta
 import uuid
 
-st.set_page_config(page_title="Campus Event Planner", page_icon="🎓", layout="wide")
+st.set_page_config(page_title="Campus Event Planner", page_icon="🎓", layout="wide", initial_sidebar_state="expanded")
 
 EVENTS_FILE = "data_ai/events.csv"
 CHECKLIST_FILE = "data_ai/checklist_items.csv"
@@ -71,7 +71,8 @@ DEFAULT_CHECKLIST = [
     {"category": "Outdoor", "item": "Arrange generator or outdoor power source", "required": False},
     {"category": "Outdoor", "item": "Confirm outdoor lighting plan", "required": False},
     {"category": "Outdoor", "item": "Request extension cords and power strips through FMD", "required": False},
-    {"category": "Outdoor", "item": "Submit service request for landscaping and pest control through FMD", "required": False},
+    {"category": "Outdoor", "item": "Submit service request for landscaping through FMD", "required": False},
+    {"category": "Outdoor", "item": "Submit service request for pest control through FMD", "required": False},
     # ── Billing ───────────────────────────────────────────────────────────────
     {"category": "Billing", "item": "Confirm funding source and account number", "required": True},
     {"category": "Billing", "item": "Receive and review FMD estimate", "required": True},
@@ -179,6 +180,19 @@ def load_checklist():
     if os.path.exists(CHECKLIST_FILE):
         df = pd.read_csv(CHECKLIST_FILE)
         df["category"] = df["category"].replace({"UACE": "Events Dept.", "University Events Department": "Events Dept."})
+        # Remove outdoor-only items from non-outdoor events
+        if os.path.exists(EVENTS_FILE):
+            ev = pd.read_csv(EVENTS_FILE)
+            non_outdoor_ids = ev[ev["event_type"] != "Outdoor Festival"]["event_id"].tolist()
+            outdoor_keywords = ["extension cords", "landscaping", "pest control"]
+            pattern = "|".join(outdoor_keywords)
+            bad = (
+                df["event_id"].isin(non_outdoor_ids) &
+                df["item"].str.contains(pattern, case=False, na=False)
+            )
+            if bad.any():
+                df = df[~bad]
+                df.to_csv(CHECKLIST_FILE, index=False)
         return df
     return pd.DataFrame(columns=["checklist_id", "event_id", "category", "item", "status", "notes", "required"])
 
@@ -347,8 +361,23 @@ st.markdown("""
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap');
 
 /* ── Global Font ──────────────────────────────────────────────────── */
-html, body, [class*="css"], * {
+html, body, [class*="css"],
+p, h1, h2, h3, h4, h5, h6, li, a,
+button, input, textarea, select, option,
+label, th, td, caption, figcaption,
+[data-testid="stMarkdownContainer"],
+[data-testid="stText"],
+[data-testid="stWidgetLabel"],
+[data-testid="stCaptionContainer"],
+[data-baseweb="tab"],
+[data-testid="stAppViewContainer"] div {
     font-family: 'Montserrat', sans-serif !important;
+}
+/* Restore icon fonts — Streamlit renders icons as spans with Material Symbols */
+span[data-testid*="Icon"],
+.material-icons, .material-symbols-rounded, .material-symbols-outlined,
+[class*="stIcon"] {
+    font-family: 'Material Symbols Rounded', 'Material Icons', sans-serif !important;
 }
 
 /* ── Main App Background ─────────────────────────────────────────── */
@@ -374,7 +403,8 @@ html, body, [class*="css"], * {
     border-color: rgba(74,24,64,0.2) !important;
 }
 /* Sidebar primary button = selected event */
-[data-testid="stSidebar"] button[kind="primary"] {
+[data-testid="stSidebar"] button[kind="primary"],
+[data-testid="stSidebar"] [data-testid="stFormSubmitButton"] button {
     background: linear-gradient(135deg, #E8A0B8, #F0C880) !important;
     color: #4A1840 !important;
     border: none !important;
@@ -536,6 +566,49 @@ hr {
 textarea {
     color: #6B3020 !important;
 }
+
+/* ── Hide Streamlit built-in toolbar / keyboard shortcut badge ───── */
+[data-testid="stToolbar"],
+[data-testid="stAppToolbar"],
+[data-testid="stToolbarActions"],
+[data-testid="stToolbarActionButton"],
+[data-testid="stToolbarActionButtonIcon"],
+[data-testid="stToolbarActionButtonLabel"],
+[data-testid="stDecoration"],
+[data-testid="stStatusWidget"],
+[data-testid="stBottom"],
+[data-testid="stAppDeployButton"],
+#MainMenu,
+footer {
+    display: none !important;
+}
+[data-testid="stHeader"] {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+}
+
+/* ── Force sidebar always visible, hide collapse button ─────────── */
+[data-testid="stSidebar"] {
+    display: block !important;
+    visibility: visible !important;
+    transform: none !important;
+    min-width: 244px !important;
+    width: 244px !important;
+    opacity: 1 !important;
+    margin-left: 0 !important;
+    left: 0 !important;
+}
+[data-testid="stSidebarCollapseButton"],
+[data-testid="collapsedControl"],
+[data-testid="stSidebarCollapsedControl"] {
+    display: none !important;
+}
+
+/* ── Prevent bottom overlap ──────────────────────────────────────── */
+[data-testid="stAppViewContainer"] {
+    padding-bottom: 2rem !important;
+}
 </style>
 """, unsafe_allow_html=True)
 
@@ -566,7 +639,7 @@ with st.sidebar:
             badge = "🟢" if pct == 100 else ("🟡" if pct >= 50 else "🔴")
             is_selected = st.session_state.selected_event_id == ev["event_id"]
             st.markdown(f"**{ev['event_name']}**")
-            st.caption(f"📅 {ev['event_date']}  ·  {ev['event_type']}")
+            st.caption(f"📅 {pd.to_datetime(ev['event_date']).strftime('%m/%d/%Y')}  ·  {ev['event_type']}")
             st.progress(pct / 100, text=f"{badge} {pct}% complete")
             if st.button(
                 "✓ Viewing" if is_selected else "View →",
@@ -645,7 +718,7 @@ checklist_df = load_checklist()
 # Event summary bar
 col1, col2, col3, col4 = st.columns(4)
 col1.metric("Event", selected_event["event_name"])
-col2.metric("Date", selected_event["event_date"])
+col2.metric("Date", pd.to_datetime(selected_event["event_date"]).strftime("%m/%d/%Y"))
 col3.metric("Venue", selected_event["location"])
 col4.metric("Attendance", selected_event["expected_attendance"])
 
@@ -809,6 +882,7 @@ for tab, (label, category) in zip(tabs, tab_defs):
             render_checklist_tab(category, event_id, checklist_df)
 
 st.divider()
+st.markdown("<div style='margin-top: 1rem;'></div>", unsafe_allow_html=True)
 
 with st.expander("⚠️ Danger Zone — Delete This Event"):
     st.warning(f"This will permanently delete **{selected_event['event_name']}** and all its checklist data.")
