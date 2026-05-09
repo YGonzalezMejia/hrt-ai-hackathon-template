@@ -8,10 +8,10 @@
 * Highlights submissions required by campus stakeholders. 
 
 ## How to Use
-Event coordinators executing events on campus can use this app to ensure service requests for campus stakeholders are submitted on time for implemantation. Each stakeholder tab includes a list of required submissions based on the event type. <p>If the event is outdoors, an additional checklist with specific requirements for outdoor events becomes available.<p> The app also provides a progressive timeline to show you how far you are in the planning process and what tasks still need attention.
+Event coordinators executing events on campus can use this app to ensure service requests for campus stakeholders are submitted on time for implemantation. Each stakeholder tab includes a checklist of required submissions based on the event type. <p>If the event is outdoors, an additional checklist with specific requirements for outdoor events becomes available.<p> The app also provides a progressive timeline to show you how far you are in the planning process and what tasks still need attention.
 
 ## Data
-Describe any datasets or inputs the app uses (if applicable)
+This app does not use any external datasets. All requirements are predetermined however there is an option to add a custom checklist items under each tab.
 
 ## Built With
 
