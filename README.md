@@ -1,49 +1,20 @@
-# 🎉 HRT AI Hackathon Template
+# 🎓 Campus Events Stakeholder Planning Hub
 
-A GitHub Codespace template for the Hospitality, Recreation, and Tourism (HRT) Applied Research Hackathon. Build a working Streamlit prototype with Claude — no coding experience required.
+<p>A web-based planning dashboard to help event coordinators in higher education meet campus stakeholder deadlines to decrease last minute demand on campus event services for a seamless collaborative experience.</p>
 
-## Getting Started
+## What It Does
+* Creates a time based check list for campus event planners. 
+* Hightlights urgent deadlines to avoid oversights.
+* Highlights submissions required by campus stakeholders. 
 
-1. Click **Code** → **Create Codespace on main**
-2. Wait for the environment to set up (1~5 min). The terminal will tell you when everything is ready.
-3. Click the **Claude** (orange star) icon at the top right corner
-4. Sign in with your **Claude Team** account
-5. Tell Claude what you want to build! For example:
-   > "Build a dashboard that shows hotel occupancy by city."
+## How to Use
+Event coordinators executing events on campus can use this app to ensure service requests for campus stakeholders are submitted on time for implemantation. Each stakeholder tab includes a list of required submissions based on the event type. <p>If the event is outdoors, an additional checklist with specific requirements for outdoor events becomes available.<p> The app also provides a progressive timeline to show you how far you are in the planning process and what tasks still need attention.
 
-## Claude Commands
+## Data
+Describe any datasets or inputs the app uses (if applicable)
 
-Type these in the Claude Code chat at any time:
+## Built With
 
-| Command | What it does |
-|---------|-------------|
-| `/run` | Start your app and give you a clickable link to view it |
-| `/checkpoint` | Save your current progress |
-| `/back-to-checkpoint` | Restore to your last saved checkpoint |
-| `/restart` | Reset everything back to the very beginning |
-| `/write-readme` | Generate a README based on your current app |
-| `/push` | Publish your project to your own GitHub for your portfolio |
-| `/handoff` | Write a session summary to pick up later |
-| `/resume` | Load the previous session summary |
-
-## What's Inside
-
-| File / Folder | Purpose |
-|---------------|---------|
-| `app.py` | Your Streamlit app — Claude writes all code here |
-| `CLAUDE.md` | Instructions that guide Claude's behavior |
-| `requirements.txt` | Python dependencies (Streamlit, Pandas) |
-| `data/` | Place your own datasets here (CSV, etc.) |
-| `data_ai/` | Claude saves any generated or crawled data here |
-
-## Uploading Your Own Data
-
-1. In the left sidebar, right-click the `data/` folder
-2. Select **Upload...**
-3. Choose your file
-
-CSV files will automatically open as a table when you click them.
-
----
-
-**Have fun building!** 🚀
+- [Streamlit](https://streamlit.io) — web app framework
+- [Pandas](https://pandas.pydata.org) — data management and CSV handling
+- Python standard library (`datetime`, `uuid`, `os`)
