@@ -85,12 +85,12 @@ DEFAULT_CHECKLIST = [
 def load_events():
     if os.path.exists(EVENTS_FILE):
         df = pd.read_csv(EVENTS_FILE)
-        for col in ["catering_enabled", "parking_enabled"]:
+        for col in ["catering_enabled", "parking_enabled", "rain_plan_enabled"]:
             if col not in df.columns:
                 df[col] = ""
             df[col] = df[col].fillna("").astype(str)
         return df
-    return pd.DataFrame(columns=["event_id", "event_name", "event_date", "location", "expected_attendance", "event_type", "created_date", "catering_enabled", "parking_enabled"])
+    return pd.DataFrame(columns=["event_id", "event_name", "event_date", "location", "expected_attendance", "event_type", "created_date", "catering_enabled", "parking_enabled", "rain_plan_enabled"])
 
 
 def is_enabled(val):
@@ -264,8 +264,64 @@ def get_completion_stats(event_id, checklist_df):
     return stats
 
 
-STATUS_EMOJI = {"Pending": "🔴", "In Progress": "🟡", "Completed": "🟢"}
+STATUS_EMOJI = {"Pending": "🔴", "In Progress": "🟡", "Completed": "🟢", "Not Required": "⚫"}
 STATUS_OPTIONS = ["Pending", "In Progress", "Completed"]
+STATUS_OPTIONS_WITH_NR = ["Pending", "In Progress", "Completed", "Not Required"]
+
+OPTIONAL_STATUS_ITEMS = {
+    "Order linens if needed",
+    "Reserve parking stalls through UPD",
+    "Request guest parking permits",
+    "Request parking signage for event",
+    "Arrange shuttle service if needed",
+    "Request traffic control for large events",
+    "Confirm parking attendant coverage",
+}
+
+
+CONTACTS = {
+    "Catering": {
+        "name": "Maria Lopez",
+        "title": "Catering Coordinator",
+        "phone": "(510) 555-0192",
+        "email": "m.lopez@pioneercatering.edu",
+        "website": "https://www.pioneercatering.edu",
+        "menu": "https://www.pioneercatering.edu/menu",
+    },
+    "Facilities & Service Requests": {
+        "name": "James Thornton",
+        "title": "FMD Event Services Manager",
+        "phone": "(510) 555-0247",
+        "email": "j.thornton@pioneerfmd.edu",
+        "website": "https://www.pioneerfmd.edu",
+    },
+    "Parking": {
+        "name": "Officer Dana Kim",
+        "title": "UPD Event Parking Coordinator",
+        "phone": "(510) 555-0381",
+        "email": "d.kim@pioneerupd.edu",
+        "website": "https://www.pioneerupd.edu",
+    },
+    "Campus Venue": {
+        "name": "Alex Rivera",
+        "title": "Campus Venue Event Professional",
+        "phone": "(510) 555-0134",
+        "email": "a.rivera@pioneervenue.edu",
+        "website": "https://www.pioneervenue.edu",
+    },
+}
+
+
+def render_contact_card(category):
+    contact = CONTACTS.get(category)
+    if not contact:
+        return
+    with st.expander("📞 Contact Information", expanded=False):
+        st.markdown(f"**{contact['name']}** — {contact['title']}")
+        st.markdown(f"📱 {contact['phone']}  &nbsp;|&nbsp;  ✉️ [{contact['email']}](mailto:{contact['email']})")
+        st.markdown(f"🌐 [{contact['website']}]({contact['website']})")
+        if contact.get("menu"):
+            st.markdown(f"🍽️ [View Menu]({contact['menu']})")
 
 
 def render_item_row(row, checklist_df):
@@ -275,10 +331,11 @@ def render_item_row(row, checklist_df):
         if row["required"]:
             st.caption("Required")
     with c2:
-        current_status = row["status"] if row["status"] in STATUS_OPTIONS else "Pending"
+        opts = STATUS_OPTIONS_WITH_NR if row["item"] in OPTIONAL_STATUS_ITEMS else STATUS_OPTIONS
+        current_status = row["status"] if row["status"] in opts else "Pending"
         new_status = st.selectbox(
-            "Status", STATUS_OPTIONS,
-            index=STATUS_OPTIONS.index(current_status),
+            "Status", opts,
+            index=opts.index(current_status),
             key=f"status_{row['checklist_id']}",
             label_visibility="collapsed",
         )
@@ -341,6 +398,13 @@ def render_checklist_tab(category, event_id, checklist_df):
                 st.success("Item added!")
                 st.rerun()
 
+
+OUTDOOR_RAIN_ITEM = "Develop and document rain / inclement weather plan"
+OUTDOOR_RAIN_SUB_ITEMS = [
+    "Set weather cancellation threshold and decision timeline",
+    "Monitor weather forecast in the days leading up to event",
+    "Communicate rain plan to all vendors, staff, and attendees",
+]
 
 CV_MEETING_ITEM = "Meet with Event Professional to review event logistics"
 CV_SUB_ITEMS = {
@@ -405,13 +469,88 @@ def render_campus_venue_tab(event_id, checklist_df):
                 st.rerun()
 
 
+def render_outdoor_tab(event_id, checklist_df, events_df, rain_plan_val, rain_plan_on):
+    outdoor_items = checklist_df[
+        (checklist_df["event_id"] == event_id) & (checklist_df["category"] == "Outdoor")
+    ].copy()
+
+    # ── Rain plan yes/no question ──────────────────────────────────────────────
+    rain_index = (0 if rain_plan_on else 1) if is_answered(rain_plan_val) else None
+    rain_answer = st.radio(
+        "Will you have a rain / inclement weather plan?",
+        ["Yes", "No"],
+        index=rain_index,
+        horizontal=True,
+        key="rain_plan_radio",
+    )
+    if rain_answer is not None:
+        new_val = str(rain_answer == "Yes")
+        if str(rain_plan_val) != new_val:
+            events_df.loc[events_df["event_id"] == event_id, "rain_plan_enabled"] = new_val
+            save_events(events_df)
+            st.rerun()
+
+    if rain_plan_on:
+        sub_items_df = outdoor_items[outdoor_items["item"].isin(OUTDOOR_RAIN_SUB_ITEMS)]
+        ordered_rows = [
+            sub_items_df[sub_items_df["item"] == name].iloc[0]
+            for name in OUTDOOR_RAIN_SUB_ITEMS
+            if name in sub_items_df["item"].values
+        ]
+        sub_items_ordered = pd.DataFrame(ordered_rows) if ordered_rows else sub_items_df.iloc[0:0]
+        with st.expander("🌧️ Rain plan details", expanded=True):
+            for _, sub_row in sub_items_ordered.iterrows():
+                render_item_row(sub_row, checklist_df)
+
+    # ── Other outdoor items ────────────────────────────────────────────────────
+    other_items = outdoor_items[
+        ~outdoor_items["item"].isin(OUTDOOR_RAIN_SUB_ITEMS) &
+        (outdoor_items["item"] != OUTDOOR_RAIN_ITEM)
+    ]
+
+    if len(other_items) == 0:
+        pass
+    else:
+        _, filter_col = st.columns([3, 1])
+        show_filter = filter_col.selectbox(
+            "Show", ["All", "Pending", "In Progress", "Completed"], key="filter_Outdoor"
+        )
+        if show_filter != "All":
+            other_items = other_items[other_items["status"] == show_filter]
+
+        st.markdown("---")
+        for _, row in other_items.iterrows():
+            render_item_row(row, checklist_df)
+
+    with st.expander("➕ Add a custom checklist item"):
+        with st.form("add_item_Outdoor", clear_on_submit=True):
+            new_item_name = st.text_input("Item description")
+            new_item_required = st.checkbox("Mark as required")
+            add_submitted = st.form_submit_button("Add Item")
+            if add_submitted and new_item_name.strip():
+                fresh_df = load_checklist()
+                new_row = pd.DataFrame([{
+                    "checklist_id": str(uuid.uuid4()),
+                    "event_id": event_id,
+                    "category": "Outdoor",
+                    "item": new_item_name.strip(),
+                    "status": "Pending",
+                    "notes": "",
+                    "required": new_item_required,
+                }])
+                fresh_df = pd.concat([fresh_df, new_row], ignore_index=True)
+                save_checklist(fresh_df)
+                st.success("Item added!")
+                st.rerun()
+
+
 # ── Session State ──────────────────────────────────────────────────────────────
 if "selected_event_id" not in st.session_state:
     st.session_state.selected_event_id = None
 
 # ── App Shell ──────────────────────────────────────────────────────────────────
-st.title("🎓 Campus Event Planning Hub")
-st.markdown("Work together with your campus stakeholders to never miss a deadline on your campus event.")
+st.markdown("<h1 style='text-align: center;'>🎓 Campus Event Planning Hub</h1>", unsafe_allow_html=True)
+st.markdown("<p style='text-align: center;'>Plan ahead and never miss a deadline with our campus stakeholders.<br>Create a seamless planning experience for all!</p>", unsafe_allow_html=True)
 
 st.markdown("""
 <style>
@@ -812,8 +951,10 @@ st.divider()
 
 catering_val = selected_event["catering_enabled"]
 parking_val = selected_event["parking_enabled"]
+rain_plan_val = selected_event["rain_plan_enabled"]
 catering_on = is_enabled(catering_val)
 parking_on = is_enabled(parking_val)
+rain_plan_on = is_enabled(rain_plan_val)
 
 # Progress overview
 checklist_df = load_checklist()
@@ -884,6 +1025,7 @@ tabs = st.tabs([t[0] for t in tab_defs])
 for tab, (label, category) in zip(tabs, tab_defs):
     with tab:
         if category == "Catering":
+            render_contact_card("Catering")
             catering_index = (0 if catering_on else 1) if is_answered(catering_val) else None
             catering_answer = st.radio(
                 "Will catering be offered?",
@@ -904,6 +1046,7 @@ for tab, (label, category) in zip(tabs, tab_defs):
                 st.divider()
                 render_checklist_tab("Catering", event_id, checklist_df)
         elif category == "Parking":
+            render_contact_card("Parking")
             parking_index = (0 if parking_on else 1) if is_answered(parking_val) else None
             parking_answer = st.radio(
                 "Will parking arrangements be needed?",
@@ -928,9 +1071,11 @@ for tab, (label, category) in zip(tabs, tab_defs):
                 render_checklist_tab("Parking", event_id, parking_df)
         elif category == "Facilities & Service Requests":
             st.markdown("### 🏛️ Facilities & Service Requests (FMD)")
+            render_contact_card("Facilities & Service Requests")
             render_checklist_tab(category, event_id, checklist_df)
         elif category == "Campus Venue":
             st.markdown("### 🎓 Campus Venue")
+            render_contact_card("Campus Venue")
             render_campus_venue_tab(event_id, checklist_df)
         elif category == "Billing":
             st.markdown("### 💰 Billing & Estimates")
@@ -939,7 +1084,7 @@ for tab, (label, category) in zip(tabs, tab_defs):
         elif category == "Outdoor":
             st.markdown("### ⛺ Outdoor Planning")
             st.info("Complete the rain plan early so all vendors are aligned.")
-            render_checklist_tab(category, event_id, checklist_df)
+            render_outdoor_tab(event_id, checklist_df, events_df, rain_plan_val, rain_plan_on)
 
 st.divider()
 st.markdown("<div style='margin-top: 1rem;'></div>", unsafe_allow_html=True)
