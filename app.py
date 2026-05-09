@@ -312,6 +312,19 @@ CONTACTS = {
 }
 
 
+def render_tab_progress(items_df):
+    total = len(items_df)
+    if total == 0:
+        return
+    completed = (items_df["status"] == "Completed").sum()
+    not_required = (items_df["status"] == "Not Required").sum()
+    counted = total - not_required
+    pct = completed / counted if counted > 0 else 0
+    badge = "🟢" if pct == 1.0 else ("🟡" if pct >= 0.5 else "🔴")
+    st.markdown(f"{badge} **{completed} of {counted} items completed**")
+    st.progress(pct)
+
+
 def render_contact_card(category):
     contact = CONTACTS.get(category)
     if not contact:
@@ -366,6 +379,7 @@ def render_checklist_tab(category, event_id, checklist_df):
         st.info("No items found for this category.")
         return
 
+    render_tab_progress(cat_items)
     _, filter_col = st.columns([3, 1])
     show_filter = filter_col.selectbox(
         "Show", ["All", "Pending", "In Progress", "Completed"], key=f"filter_{category}"
@@ -424,6 +438,7 @@ def render_campus_venue_tab(event_id, checklist_df):
         st.info("No items found for this category.")
         return
 
+    render_tab_progress(cv_items)
     _, filter_col = st.columns([3, 1])
     show_filter = filter_col.selectbox(
         "Show", ["All", "Pending", "In Progress", "Completed"], key="filter_Campus Venue"
@@ -473,6 +488,8 @@ def render_outdoor_tab(event_id, checklist_df, events_df, rain_plan_val, rain_pl
     outdoor_items = checklist_df[
         (checklist_df["event_id"] == event_id) & (checklist_df["category"] == "Outdoor")
     ].copy()
+
+    render_tab_progress(outdoor_items)
 
     # ── Rain plan yes/no question ──────────────────────────────────────────────
     rain_index = (0 if rain_plan_on else 1) if is_answered(rain_plan_val) else None
@@ -912,11 +929,13 @@ event_id = selected_event["event_id"]
 checklist_df = load_checklist()
 
 # Event summary bar
-col1, col2, col3, col4 = st.columns(4)
+col1, col2, col3, col4, col5 = st.columns(5)
 col1.metric("Event", selected_event["event_name"])
 col2.metric("Date", pd.to_datetime(selected_event["event_date"]).strftime("%m/%d/%Y"))
 col3.metric("Venue", selected_event["location"])
 col4.metric("Attendance", selected_event["expected_attendance"])
+_days_left = (pd.to_datetime(selected_event["event_date"]).date() - date.today()).days
+col5.metric("Days Until Event", _days_left if _days_left >= 0 else f"{abs(_days_left)} days ago")
 
 with st.expander("✏️ Edit Event Details"):
     with st.form("edit_event_form"):
@@ -1020,6 +1039,14 @@ tab_defs = [
 if is_outdoor:
     tab_defs.append(("⛺ Outdoor", "Outdoor"))
 
+_event_checklist = checklist_df[checklist_df["event_id"] == event_id]
+_pending_required = _event_checklist[
+    (_event_checklist["required"] == True) &
+    (_event_checklist["status"] == "Pending")
+]
+if len(_pending_required) > 0:
+    st.warning(f"⚠️ You have **{len(_pending_required)} required item{'s' if len(_pending_required) != 1 else ''}** still marked as Pending.")
+
 tabs = st.tabs([t[0] for t in tab_defs])
 
 for tab, (label, category) in zip(tabs, tab_defs):
@@ -1087,6 +1114,37 @@ for tab, (label, category) in zip(tabs, tab_defs):
             render_outdoor_tab(event_id, checklist_df, events_df, rain_plan_val, rain_plan_on)
 
 st.divider()
+
+with st.expander("📄 Event Summary", expanded=False):
+    st.markdown(f"### {selected_event['event_name']}")
+    st.markdown(f"**Date:** {pd.to_datetime(selected_event['event_date']).strftime('%m/%d/%Y')}  &nbsp;|&nbsp;  **Venue:** {selected_event['location']}  &nbsp;|&nbsp;  **Attendance:** {selected_event['expected_attendance']}")
+    st.markdown("---")
+    _summary_df = checklist_df[checklist_df["event_id"] == event_id]
+    for cat in _summary_df["category"].unique():
+        cat_rows = _summary_df[_summary_df["category"] == cat]
+        completed = (cat_rows["status"] == "Completed").sum()
+        total = len(cat_rows)
+        st.markdown(f"**{cat}** — {completed}/{total} completed")
+        for _, r in cat_rows.iterrows():
+            emoji = STATUS_EMOJI.get(r["status"], "⚪")
+            st.markdown(f"&nbsp;&nbsp;&nbsp;&nbsp;{emoji} {r['item']}")
+    st.markdown("---")
+    _notes_rows = _summary_df[_summary_df["notes"].fillna("").astype(str).str.strip() != ""]
+    notes_text = f"Event Summary — {selected_event['event_name']}\n"
+    notes_text += f"Date: {pd.to_datetime(selected_event['event_date']).strftime('%m/%d/%Y')} | Venue: {selected_event['location']}\n\n"
+    if len(_notes_rows) > 0:
+        notes_text += "NOTES\n" + "="*40 + "\n"
+        for _, r in _notes_rows.iterrows():
+            notes_text += f"[{r['category']}] {r['item']}\n  → {r['notes']}\n\n"
+    else:
+        notes_text += "No notes recorded.\n"
+    st.download_button(
+        "⬇️ Export Notes as Text",
+        data=notes_text,
+        file_name=f"{selected_event['event_name'].replace(' ', '_')}_notes.txt",
+        mime="text/plain",
+    )
+
 st.markdown("<div style='margin-top: 1rem;'></div>", unsafe_allow_html=True)
 
 with st.expander("⚠️ Danger Zone — Delete This Event"):
