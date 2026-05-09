@@ -13,7 +13,7 @@ CATEGORIES = [
     "Catering",
     "Facilities & Service Requests",
     "Parking",
-    "Events Dept.",
+    "Campus Venue",
     "Billing",
     "Outdoor",
 ]
@@ -31,10 +31,10 @@ EVENT_TYPES = [
 
 DEFAULT_CHECKLIST = [
     # ── Catering ──────────────────────────────────────────────────────────────
+    {"category": "Catering", "item": "Submit catering order", "required": True},
+    {"category": "Catering", "item": "Confirm guest headcount with caterer", "required": True},
     {"category": "Catering", "item": "Confirm guest dietary and allergy accommodations", "required": True},
-    {"category": "Catering", "item": "Submit order 10 business days in advance", "required": True},
-    {"category": "Catering", "item": "Confirm guest headcount with caterer 5 business days in advance", "required": True},
-    {"category": "Catering", "item": "Confirm delivery time and setup location 5 business days in advance", "required": True},
+    {"category": "Catering", "item": "Confirm delivery time and setup location", "required": True},
     # Linens
     {"category": "Catering", "item": "Order linens if needed", "required": False},
     # ── Facilities & Service Requests (FMD) ───────────────────────────────────
@@ -43,24 +43,20 @@ DEFAULT_CHECKLIST = [
     {"category": "Facilities & Service Requests", "item": "Submit custodial services request", "required": True},
     {"category": "Facilities & Service Requests", "item": "Confirm HVAC settings for event", "required": False},
     # ── Parking ───────────────────────────────────────────────────────────────
-    {"category": "Parking", "item": "Reserve parking lot or designated section", "required": True},
+    {"category": "Parking", "item": "Reserve parking stalls through UPD", "required": True},
     {"category": "Parking", "item": "Request guest parking permits", "required": True},
-    {"category": "Parking", "item": "Arrange ADA accessible parking spaces", "required": True},
-    {"category": "Parking", "item": "Coordinate with campus parking services office (UPD)", "required": True},
-    {"category": "Parking", "item": "Get parking confirmation number", "required": True},
-    {"category": "Parking", "item": "Send parking instructions and map to attendees", "required": True},
     {"category": "Parking", "item": "Request parking signage for event", "required": False},
     {"category": "Parking", "item": "Arrange shuttle service if needed", "required": False},
     {"category": "Parking", "item": "Request traffic control for large events", "required": False},
     {"category": "Parking", "item": "Confirm parking attendant coverage", "required": False},
-    # ── Events Dept. ──────────────────────────────────────────────────────────
-    {"category": "Events Dept.", "item": "Reserve room through 25Live", "required": True},
-    {"category": "Events Dept.", "item": "Meet with Event Professional to review event logistics", "required": True},
-    {"category": "Events Dept.", "item": "Confirm event-day point of contact", "required": True},
-    {"category": "Events Dept.", "item": "Review event run-of-show with event professional", "required": True},
-    {"category": "Events Dept.", "item": "Request AV equipment (projector, microphone, screen) 10 business days in advance", "required": False},
-    {"category": "Events Dept.", "item": "Review campus protocols and event procedures with event professional", "required": True},
-    {"category": "Events Dept.", "item": "Get Events Dept. approval and confirmation", "required": True},
+    # ── Campus Venue ──────────────────────────────────────────────────────────
+    {"category": "Campus Venue", "item": "Reserve room through 25Live", "required": True},
+    {"category": "Campus Venue", "item": "Receive venue approval and confirmation from event professional", "required": True},
+    {"category": "Campus Venue", "item": "Meet with Event Professional to review event logistics", "required": True},
+    {"category": "Campus Venue", "item": "Confirm event-day point of contact", "required": True},
+    {"category": "Campus Venue", "item": "Review event run-of-show", "required": True},
+    {"category": "Campus Venue", "item": "Request AV equipment (projector, microphone, screen)", "required": False},
+    {"category": "Campus Venue", "item": "Review campus protocols and event procedures", "required": True},
     # ── Outdoor (Outdoor Festival only) ───────────────────────────────────────
     {"category": "Outdoor", "item": "Develop and document rain / inclement weather plan", "required": True},
     {"category": "Outdoor", "item": "Identify indoor backup or covered venue", "required": True},
@@ -78,11 +74,11 @@ DEFAULT_CHECKLIST = [
     {"category": "Billing", "item": "Receive and review FMD estimate", "required": True},
     {"category": "Billing", "item": "Receive and review Catering estimate", "required": True},
     {"category": "Billing", "item": "Receive and review UPD estimate", "required": True},
-    {"category": "Billing", "item": "Receive and review Events Dept. estimate", "required": True},
-    {"category": "Billing", "item": "Collect final invoice from FMD (due 20 business days after event)", "required": True},
-    {"category": "Billing", "item": "Collect final invoice from Catering (due 20 business days after event)", "required": True},
-    {"category": "Billing", "item": "Collect final invoice from Parking / UPD (due 20 business days after event)", "required": True},
-    {"category": "Billing", "item": "Collect final invoice from Events Dept. (due 20 business days after event)", "required": True},
+    {"category": "Billing", "item": "Receive and review Campus Venue estimate", "required": True},
+    {"category": "Billing", "item": "Collect final invoice from FMD", "required": True},
+    {"category": "Billing", "item": "Collect final invoice from Catering", "required": True},
+    {"category": "Billing", "item": "Collect final invoice from Parking / UPD", "required": True},
+    {"category": "Billing", "item": "Collect final invoice from Campus Venue", "required": True},
 ]
 
 
@@ -150,20 +146,20 @@ def build_timeline(event_date_str, attendance, catering_on):
         rows.append({"_date": d, "Phase": "After Event", "Due Date": d.strftime("%a, %b %d %Y"), "Task": task, "Department": dept, "Status": status})
 
     add_before("Reserve room / venue", "Facilities", 20)
-    add_before("Request AV equipment (projector, microphone, screen)", "Events Dept.", 10)
+    add_before("Request AV equipment (projector, microphone, screen)", "Campus Venue", 10)
     if int(attendance) > 50:
         add_before("Submit complex layout (>50 guests)", "Facilities", 10)
     else:
         add_before("Submit simple layout (≤49 guests)", "Facilities", 5)
     if catering_on:
-        add_before("Confirm guest dietary & allergy accommodations", "Catering", 15)
+        add_before("Confirm guest dietary & allergy accommodations", "Catering", 5)
         add_before("Submit catering order", "Catering", 10)
         add_before("Confirm guest headcount with caterer", "Catering", 5)
         add_before("Confirm delivery time & setup location", "Catering", 5)
     add_after("Collect final invoice from FMD", "Billing", 20)
     add_after("Collect final invoice from Catering", "Billing", 20)
     add_after("Collect final invoice from Parking / UPD", "Billing", 20)
-    add_after("Collect final invoice from Events Dept.", "Billing", 20)
+    add_after("Collect final invoice from Campus Venue", "Billing", 20)
 
     rows.sort(key=lambda x: x["_date"])
     for r in rows:
@@ -179,7 +175,7 @@ def save_events(df):
 def load_checklist():
     if os.path.exists(CHECKLIST_FILE):
         df = pd.read_csv(CHECKLIST_FILE)
-        df["category"] = df["category"].replace({"UACE": "Events Dept.", "University Events Department": "Events Dept."})
+        df["category"] = df["category"].replace({"UACE": "Campus Venue", "University Events Department": "Campus Venue", "Events Dept.": "Campus Venue"})
         # Remove outdoor-only items from non-outdoor events
         if os.path.exists(EVENTS_FILE):
             ev = pd.read_csv(EVENTS_FILE)
@@ -268,6 +264,42 @@ def get_completion_stats(event_id, checklist_df):
     return stats
 
 
+STATUS_EMOJI = {"Pending": "🔴", "In Progress": "🟡", "Completed": "🟢"}
+STATUS_OPTIONS = ["Pending", "In Progress", "Completed"]
+
+
+def render_item_row(row, checklist_df):
+    c1, c2, c3 = st.columns([3, 1.5, 2.5])
+    with c1:
+        st.markdown(f"**{row['item']}**")
+        if row["required"]:
+            st.caption("Required")
+    with c2:
+        current_status = row["status"] if row["status"] in STATUS_OPTIONS else "Pending"
+        new_status = st.selectbox(
+            "Status", STATUS_OPTIONS,
+            index=STATUS_OPTIONS.index(current_status),
+            key=f"status_{row['checklist_id']}",
+            label_visibility="collapsed",
+        )
+        st.caption(STATUS_EMOJI.get(new_status, "⚪") + " " + new_status)
+        if new_status != row["status"]:
+            checklist_df.loc[checklist_df["checklist_id"] == row["checklist_id"], "status"] = new_status
+            save_checklist(checklist_df)
+            st.rerun()
+    with c3:
+        current_notes = row["notes"] if pd.notna(row["notes"]) else ""
+        new_notes = st.text_input(
+            "Notes", value=current_notes, placeholder="Add a note...",
+            key=f"notes_{row['checklist_id']}",
+            label_visibility="collapsed",
+        )
+        if new_notes != current_notes:
+            checklist_df.loc[checklist_df["checklist_id"] == row["checklist_id"], "notes"] = new_notes
+            save_checklist(checklist_df)
+    st.markdown("---")
+
+
 def render_checklist_tab(category, event_id, checklist_df):
     cat_items = checklist_df[
         (checklist_df["event_id"] == event_id) & (checklist_df["category"] == category)
@@ -285,46 +317,8 @@ def render_checklist_tab(category, event_id, checklist_df):
 
     st.markdown("---")
 
-    STATUS_EMOJI = {"Pending": "🔴", "In Progress": "🟡", "Completed": "🟢"}
-    STATUS_OPTIONS = ["Pending", "In Progress", "Completed"]
-
     for _, row in display_items.iterrows():
-        c1, c2, c3 = st.columns([3, 1.5, 2.5])
-
-        with c1:
-            st.markdown(f"**{row['item']}**")
-            if row["required"]:
-                st.caption("Required")
-
-        with c2:
-            current_status = row["status"] if row["status"] in STATUS_OPTIONS else "Pending"
-            new_status = st.selectbox(
-                "Status",
-                STATUS_OPTIONS,
-                index=STATUS_OPTIONS.index(current_status),
-                key=f"status_{row['checklist_id']}",
-                label_visibility="collapsed",
-            )
-            st.caption(STATUS_EMOJI.get(new_status, "⚪") + " " + new_status)
-            if new_status != row["status"]:
-                checklist_df.loc[checklist_df["checklist_id"] == row["checklist_id"], "status"] = new_status
-                save_checklist(checklist_df)
-                st.rerun()
-
-        with c3:
-            current_notes = row["notes"] if pd.notna(row["notes"]) else ""
-            new_notes = st.text_input(
-                "Notes",
-                value=current_notes,
-                placeholder="Add a note...",
-                key=f"notes_{row['checklist_id']}",
-                label_visibility="collapsed",
-            )
-            if new_notes != current_notes:
-                checklist_df.loc[checklist_df["checklist_id"] == row["checklist_id"], "notes"] = new_notes
-                save_checklist(checklist_df)
-
-        st.markdown("---")
+        render_item_row(row, checklist_df)
 
     with st.expander("➕ Add a custom checklist item"):
         with st.form(f"add_item_{category}", clear_on_submit=True):
@@ -348,13 +342,76 @@ def render_checklist_tab(category, event_id, checklist_df):
                 st.rerun()
 
 
+CV_MEETING_ITEM = "Meet with Event Professional to review event logistics"
+CV_SUB_ITEMS = {
+    "Confirm event-day point of contact",
+    "Review event run-of-show",
+    "Request AV equipment (projector, microphone, screen)",
+    "Review campus protocols and event procedures",
+}
+
+
+def render_campus_venue_tab(event_id, checklist_df):
+    cv_items = checklist_df[
+        (checklist_df["event_id"] == event_id) & (checklist_df["category"] == "Campus Venue")
+    ].copy()
+
+    if len(cv_items) == 0:
+        st.info("No items found for this category.")
+        return
+
+    _, filter_col = st.columns([3, 1])
+    show_filter = filter_col.selectbox(
+        "Show", ["All", "Pending", "In Progress", "Completed"], key="filter_Campus Venue"
+    )
+
+    main_items = cv_items[~cv_items["item"].isin(CV_SUB_ITEMS)]
+    sub_items = cv_items[cv_items["item"].isin(CV_SUB_ITEMS)]
+
+    if show_filter != "All":
+        main_items = main_items[main_items["status"] == show_filter]
+        sub_items = sub_items[sub_items["status"] == show_filter]
+
+    st.markdown("---")
+
+    for _, row in main_items.iterrows():
+        render_item_row(row, checklist_df)
+        if row["item"] == CV_MEETING_ITEM:
+            with st.expander("📋 Meeting agenda items", expanded=False):
+                if len(sub_items) == 0:
+                    st.caption("No items match the selected filter.")
+                for _, sub_row in sub_items.iterrows():
+                    render_item_row(sub_row, checklist_df)
+
+    with st.expander("➕ Add a custom checklist item"):
+        with st.form("add_item_Campus Venue", clear_on_submit=True):
+            new_item_name = st.text_input("Item description")
+            new_item_required = st.checkbox("Mark as required")
+            add_submitted = st.form_submit_button("Add Item")
+            if add_submitted and new_item_name.strip():
+                fresh_df = load_checklist()
+                new_row = pd.DataFrame([{
+                    "checklist_id": str(uuid.uuid4()),
+                    "event_id": event_id,
+                    "category": "Campus Venue",
+                    "item": new_item_name.strip(),
+                    "status": "Pending",
+                    "notes": "",
+                    "required": new_item_required,
+                }])
+                fresh_df = pd.concat([fresh_df, new_row], ignore_index=True)
+                save_checklist(fresh_df)
+                st.success("Item added!")
+                st.rerun()
+
+
 # ── Session State ──────────────────────────────────────────────────────────────
 if "selected_event_id" not in st.session_state:
     st.session_state.selected_event_id = None
 
 # ── App Shell ──────────────────────────────────────────────────────────────────
 st.title("🎓 Campus Event Planning Hub")
-st.markdown("Track catering, facilities, parking, Events Dept., and billing for all your campus events.")
+st.markdown("Work together with your campus stakeholders to never miss a deadline on your campus event.")
 
 st.markdown("""
 <style>
@@ -816,7 +873,7 @@ tab_defs = [
     ("🍽️ Catering", "Catering"),
     ("🏛️ Facilities & Service Requests", "Facilities & Service Requests"),
     ("🚗 Parking", "Parking"),
-    ("🎓 Events Dept.", "Events Dept."),
+    ("🎓 Campus Venue", "Campus Venue"),
     ("💰 Billing", "Billing"),
 ]
 if is_outdoor:
@@ -865,13 +922,16 @@ for tab, (label, category) in zip(tabs, tab_defs):
                     st.rerun()
             if parking_on:
                 st.divider()
-                render_checklist_tab("Parking", event_id, checklist_df)
+                parking_df = checklist_df.copy()
+                if int(selected_event["expected_attendance"]) <= 100:
+                    parking_df = parking_df[parking_df["item"] != "Request traffic control for large events"]
+                render_checklist_tab("Parking", event_id, parking_df)
         elif category == "Facilities & Service Requests":
             st.markdown("### 🏛️ Facilities & Service Requests (FMD)")
             render_checklist_tab(category, event_id, checklist_df)
-        elif category == "Events Dept.":
-            st.markdown("### 🎓 Events Dept.")
-            render_checklist_tab(category, event_id, checklist_df)
+        elif category == "Campus Venue":
+            st.markdown("### 🎓 Campus Venue")
+            render_campus_venue_tab(event_id, checklist_df)
         elif category == "Billing":
             st.markdown("### 💰 Billing & Estimates")
             st.info("Track cost estimates from each department. Mark as **Completed** once you have a final signed estimate.")
