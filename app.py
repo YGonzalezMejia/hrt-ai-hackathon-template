@@ -866,7 +866,6 @@ with st.sidebar:
 
         # Upcoming events
         if len(upcoming_df) > 0:
-            st.markdown("**Upcoming Events**")
             for _, ev in upcoming_df.iterrows():
                 render_event_card(ev, checklist_df_sidebar)
         else:
